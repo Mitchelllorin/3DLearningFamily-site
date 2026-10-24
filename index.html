@@ -99,6 +99,23 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .cap{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:.88rem;color:var(--muted);min-height:48px;padding:0 4px}
 .cap a{color:var(--fg);font-weight:600;text-decoration:none;border-bottom:1px solid var(--line);padding:12px 0}
 .cap a:hover{border-color:var(--accent)}
+/* nameplate: same as the apps - the part's name in its system colour, no box */
+.plate{grid-area:view;align-self:end;justify-self:start;position:relative;z-index:10;margin:0 0 6px 16px;max-width:min(280px,calc(100% - 32px));display:flex;flex-direction:column;gap:2px;pointer-events:none;
+  text-shadow:0 1px 3px rgba(0,0,0,.95),0 0 10px rgba(0,0,0,.75);animation:np-in .14s ease-out}
+.plate[hidden]{display:none}
+.np-name{font-weight:800;font-size:.95rem;line-height:1.15;letter-spacing:.01em;color:var(--sys,#58a6ff)}
+.np-fig{font-size:.82rem;line-height:1.25;color:#eef2f4}
+.plate.leaving{animation:np-out .3s ease-in forwards}
+@keyframes np-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@keyframes np-out{to{opacity:0;transform:translateY(4px)}}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .plate{text-shadow:0 1px 2px rgba(255,255,255,.95),0 0 10px rgba(255,255,255,.9)}:root:not([data-theme="dark"]) .np-fig{color:var(--fg)}}
+:root[data-theme="light"] .plate{text-shadow:0 1px 2px rgba(255,255,255,.95),0 0 10px rgba(255,255,255,.9)}
+:root[data-theme="light"] .np-fig{color:var(--fg)}
+.isochip{grid-area:view;align-self:start;justify-self:start;position:relative;z-index:10;margin:10px;display:flex;align-items:center;gap:8px;padding:4px 4px 4px 12px;border-radius:12px;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);font-size:.85rem;max-width:calc(100% - 20px)}
+.isochip[hidden]{display:none}
+.isochip span{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.isochip b{color:var(--fg);font-weight:600}
+.isochip button{flex:none;min-height:48px;padding:0 14px;border:0;border-radius:9px;background:var(--accent);color:var(--accent-ink);font:600 .85rem var(--body);cursor:pointer}
 
 /* thesis */
 .thesis{border-block:1px solid var(--line);background:var(--surface)}
@@ -233,7 +250,7 @@ footer{border-top:1px solid var(--line);padding-block:32px calc(32px + env(safe-
 footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
 footer a{text-decoration:none}
 footer a:hover{color:var(--fg)}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn,.go a,.beat,.screen .m{transition:none}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn,.go a,.beat,.screen .m{transition:none}.plate,.plate.leaving{animation:none}}
 </style>
 </head>
 <body>
@@ -271,6 +288,8 @@ footer a:hover{color:var(--fg)}
         <div class="stage" id="stage">
           <canvas id="gl" aria-label="A 3D model you can turn and take apart."></canvas>
           <p class="nogl" id="nogl" hidden>The 3D model needs WebGL, which this browser has turned off.</p>
+          <div class="isochip" id="isochip" hidden><span>Isolated: <b id="isoName"></b></span><button type="button" id="showAll">Show all</button></div>
+          <div class="plate" id="plate" hidden aria-live="polite"><span class="np-name" id="npName"></span><span class="np-fig" id="npFig"></span></div>
           <div class="dock">
             <div class="tabs" role="group" aria-label="Choose a model">
               <button type="button" data-m="0" aria-pressed="true">Circuit</button>
@@ -283,7 +302,7 @@ footer a:hover{color:var(--fg)}
             </div>
           </div>
         </div>
-        <figcaption class="cap"><span>Drag to turn it.</span><span id="capApp">This one's from <a href="#circuitry3d" class="bn">CircuiTry3D</a></span></figcaption>
+        <figcaption class="cap"><span>Drag to turn it. Tap a part for its name, double-tap to isolate it.</span><span id="capApp">This one's from <a href="#circuitry3d" class="bn">CircuiTry3D</a></span></figcaption>
       </figure>
     </section>
   </div>
@@ -620,11 +639,12 @@ footer a:hover{color:var(--fg)}
   function part(list,o,d){o.userData.b=o.position.clone();o.userData.d=new THREE.Vector3(d[0],d[1],d[2]);list.push(o);return o}
   function curve(pts){return new THREE.CatmullRomCurve3(pts.map(function(p){return new THREE.Vector3(p[0],p[1],p[2])}),false,'catmullrom',.1)}
   function cyl(r,h,mat,seg,edge){return M(new THREE.CylinderGeometry(r,r,h,seg||32),mat,edge)}
+  function tag(o,n,f,c,shell){o.userData.np={n:n,f:f,c:c,shell:!!shell};return o}
 
   // --- CIRCUIT: battery, switch, resistor, LED; current runs while it's together
   function buildCircuit(){
     var g=new THREE.Group(),parts=[];g.position.y=-1.6;
-    var board=M(new THREE.BoxGeometry(13,.6,8.2),std('#163a68',{r:.55,m:.1}));g.add(board);part(parts,board,[0,-3.4,0]);
+    var board=M(new THREE.BoxGeometry(13,.6,8.2),std('#163a68',{r:.55,m:.1}));g.add(board);part(parts,board,[0,-3.4,0]);tag(board,'Circuit board','Holds every part in place','#58a6ff');
     var dots=new THREE.Group();board.add(dots);
     for(var ix=-6;ix<=6;ix++)for(var iz=-3;iz<=3;iz++){var d=new THREE.Mesh(new THREE.CircleGeometry(.06,8),new THREE.MeshBasicMaterial({color:col('#2c5b93')}));d.rotation.x=-Math.PI/2;d.position.set(ix,.305,iz*1.1);dots.add(d)}
 
@@ -632,18 +652,18 @@ footer a:hover{color:var(--fg)}
     var body=cyl(.9,3.4,std('#22262b',{r:.35,m:.25}),40);body.rotation.z=Math.PI/2;bat.add(body);
     var band=cyl(.915,1.1,std('#f97316',{r:.35,m:.2}),40);band.rotation.z=Math.PI/2;band.position.x=1.1;bat.add(band);
     var nub=cyl(.32,.26,std('#c3c9cf',{r:.25,m:.9}),24);nub.rotation.z=Math.PI/2;nub.position.x=1.83;bat.add(nub);
-    g.add(bat);part(parts,bat,[-.8,4.6,-.8]);
+    g.add(bat);part(parts,bat,[-.8,4.6,-.8]);tag(bat,'Battery','Pushes the current around the loop','#f97316');
 
     var sw=new THREE.Group();sw.position.set(3.6,.3,-2.1);
     var sb=M(new THREE.BoxGeometry(1.9,.75,1.2),std('#2a2f34',{r:.5}));sb.position.y=.38;sw.add(sb);
     var lev=M(new THREE.BoxGeometry(.22,1.1,.3),std('#c3c9cf',{r:.25,m:.9}));lev.position.set(.15,1.0,0);lev.rotation.z=-.45;sw.add(lev);
-    g.add(sw);part(parts,sw,[.8,4.6,-.8]);
+    g.add(sw);part(parts,sw,[.8,4.6,-.8]);tag(sw,'Switch','Opens and closes the loop','#22c55e');
 
     var res=new THREE.Group();res.position.set(3.0,.85,2.1);
     var rb=cyl(.33,1.9,std('#d9c49c',{r:.6}),32);rb.rotation.z=Math.PI/2;res.add(rb);
     [['#7a4b25',-.55],['#111111',-.25],['#c0392b',.05],['#c9a227',.6]].forEach(function(b){var c=cyl(.345,.15,std(b[0],{r:.5,m:b[0]==='#c9a227'?.7:0}),32,null);c.rotation.z=Math.PI/2;c.position.x=b[1];res.add(c)});
     res.add(new THREE.Mesh(new THREE.TubeGeometry(curve([[-1.5,-.5,0],[-1.3,0,0],[1.3,0,0],[1.5,-.5,0]]),24,.05,8,false),std('#b8bec4',{r:.3,m:.9})));
-    g.add(res);part(parts,res,[.8,6,.8]);
+    g.add(res);part(parts,res,[.8,6,.8]);tag(res,'Resistor','Brown, black, red: 1 k\u03A9 \u00B15%','#e9b26b');
 
     var ledMat=std('#ff3b2f',{r:.2,op:.9});ledMat.emissive=col('#ff2a1a');ledMat.emissiveIntensity=0;
     var led=new THREE.Group();led.position.set(-2.6,.3,2.1);
@@ -651,7 +671,7 @@ footer a:hover{color:var(--fg)}
     var lb=cyl(.45,.75,ledMat,32);lb.position.y=.58;led.add(lb);
     var dome=new THREE.Mesh(new THREE.SphereGeometry(.45,32,16,0,Math.PI*2,0,Math.PI/2),ledMat);dome.position.y=.95;led.add(dome);
     var glow=new THREE.PointLight(col('#ff3a20'),0,7,2);glow.position.y=1.4;led.add(glow);
-    g.add(led);part(parts,led,[-.8,6,.8]);
+    g.add(led);part(parts,led,[-.8,6,.8]);tag(led,'LED','Lights while current flows','#ff6b5b');
 
     var wires=[
       [[[-1.45,1.2,-2.1],[-1.0,.55,-2.1],[-.4,.42,-2.1],[2.3,.42,-2.1],[2.65,.55,-2.1]],'#d93b2b'],
@@ -660,15 +680,16 @@ footer a:hover{color:var(--fg)}
       [[[-3.08,.42,2.1],[-4.6,.42,2.1],[-5.9,.42,1.4],[-6.0,.42,-1.4],[-5.7,.7,-2.1],[-5.12,1.2,-2.1]],'#1d1f22']
     ];
     var flow=[],dotMat=new THREE.MeshBasicMaterial({color:col('#9fe3ff')});
-    wires.forEach(function(w){
-      var c=curve(w[0]),m=new THREE.Mesh(new THREE.TubeGeometry(c,80,.11,10,false),std(w[1],{r:.45}));g.add(m);part(parts,m,[0,2.3,0]);
+    var wn=[['Wire, positive','Battery + to the switch'],['Wire','Switch to the resistor'],['Wire','Resistor to the LED'],['Wire, negative','LED back to battery \u2212']];
+    wires.forEach(function(w,wi){
+      var c=curve(w[0]),m=new THREE.Mesh(new THREE.TubeGeometry(c,80,.11,10,false),std(w[1],{r:.45}));g.add(m);part(parts,m,[0,2.3,0]);tag(m,wn[wi][0],wn[wi][1],'#58a6ff');
       var L=c.getLength(),n=Math.max(2,Math.round(L/1.4));
       for(var k=0;k<n;k++){var s=new THREE.Mesh(new THREE.SphereGeometry(.13,12,8),dotMat);m.add(s);flow.push({s:s,c:c,o:k/n,sp:1.1/L})}
     });
     var t=0;
     return {g:g,parts:parts,pitch:.62,yaw:-.35,app:'CircuiTry3D',href:'#circuitry3d',label:'A circuit with a battery, switch, resistor and LED. Take it apart to see each piece.',
       update:function(e,dt){t+=dt;var on=Math.max(0,1-e/.14);
-        ledMat.emissiveIntensity=2.4*on;glow.intensity=2.2*on;
+        led.traverse(function(o){if(o.isMesh&&o.material.emissive)o.material.emissiveIntensity=2.4*on});glow.intensity=2.2*on;
         flow.forEach(function(f){f.s.visible=on>.05;if(on>.05)f.s.position.copy(f.c.getPointAt(Math.min(.995,(t*f.sp*(reduce?.2:1)+f.o)%1)))});}};
   }
 
@@ -676,28 +697,29 @@ footer a:hover{color:var(--fg)}
   function buildWall(){
     var g=new THREE.Group(),inner=new THREE.Group(),parts=[],S=.16;g.add(inner);inner.scale.setScalar(S);inner.position.set(-32*S,-36*S-.4,0);
     var wood=new THREE.Color('#e0a957');
-    function lum(x0,x1,y0,y1,d){var c=wood.clone().offsetHSL(0,(Math.random()-.5)*.04,(Math.random()-.5)*.07);
+    function lum(x0,x1,y0,y1,d,n,f){var c=wood.clone().offsetHSL(0,(Math.random()-.5)*.04,(Math.random()-.5)*.07);
       var m=M(new THREE.BoxGeometry(x1-x0,y1-y0,3.5),new THREE.MeshStandardMaterial({color:c.convertSRGBToLinear(),roughness:.85}));
-      m.position.set((x0+x1)/2,(y0+y1)/2,0);inner.add(m);return part(parts,m,d)}
-    lum(0,64,0,1.5,[0,-10,0]);                                  // bottom plate
-    lum(0,64,69,70.5,[0,14,0]);lum(0,64,70.5,72,[0,22,0]);      // double top plate
-    lum(0,1.5,1.5,69,[-12,0,0]);lum(62.5,64,1.5,69,[12,0,0]);   // end studs
-    lum(15.25,16.75,1.5,69,[-5,0,0]);lum(47.25,48.75,1.5,69,[5,0,0]); // king studs
-    lum(16.75,18.25,1.5,48,[-1.5,0,9]);lum(45.75,47.25,1.5,48,[1.5,0,9]); // jacks
-    lum(16.75,47.25,48,55.25,[0,7,13]);                         // header
-    lum(18.25,45.75,28.5,30,[0,-3,13]);                         // sill
-    [24,32,40].forEach(function(x){lum(x-.75,x+.75,55.25,69,[0,11,5]);lum(x-.75,x+.75,1.5,28.5,[0,-6,5])}); // cripples
+      m.position.set((x0+x1)/2,(y0+y1)/2,0);inner.add(m);tag(m,n,f,'#e0a957');return part(parts,m,d)}
+    var ST='2x4 at 16 in. on centre';
+    lum(0,64,0,1.5,[0,-10,0],'Bottom plate','Nailed to the floor; studs stand on it');
+    lum(0,64,69,70.5,[0,14,0],'Top plate','Caps the studs');lum(0,64,70.5,72,[0,22,0],'Double top plate','Ties this wall to the next one');
+    lum(0,1.5,1.5,69,[-12,0,0],'Stud',ST);lum(62.5,64,1.5,69,[12,0,0],'Stud',ST);
+    lum(15.25,16.75,1.5,69,[-5,0,0],'King stud','Full height beside the opening');lum(47.25,48.75,1.5,69,[5,0,0],'King stud','Full height beside the opening');
+    lum(16.75,18.25,1.5,48,[-1.5,0,9],'Jack stud','Holds up the header');lum(45.75,47.25,1.5,48,[1.5,0,9],'Jack stud','Holds up the header');
+    lum(16.75,47.25,48,55.25,[0,7,13],'Header','Carries the load over the opening');
+    lum(18.25,45.75,28.5,30,[0,-3,13],'Rough sill','Bottom of the window opening');
+    [24,32,40].forEach(function(x){lum(x-.75,x+.75,55.25,69,[0,11,5],'Cripple stud','Header up to the top plate');lum(x-.75,x+.75,1.5,28.5,[0,-6,5],'Cripple stud','Sill down to the bottom plate')});
     function panel(z,depth,mat,d,holes){var s=new THREE.Shape();s.moveTo(0,0);s.lineTo(64,0);s.lineTo(64,72);s.lineTo(0,72);s.closePath();
       holes.forEach(function(h){var p=new THREE.Path();p.moveTo(h[0],h[1]);p.lineTo(h[2],h[1]);p.lineTo(h[2],h[3]);p.lineTo(h[0],h[3]);p.closePath();s.holes.push(p)});
       var m=M(new THREE.ExtrudeGeometry(s,{depth:depth,bevelEnabled:false}),mat);m.position.z=z;inner.add(m);return part(parts,m,d)}
     var dry=std('#efeee9',{r:.95,op:.3});
-    panel(-1.75-.44,.44,std('#b8894f',{r:.95}),[0,0,-30],[[18.25,30,45.75,48]]);
-    panel(1.75,.5,dry,[0,0,30],[[18.25,30,45.75,48],[12.25,14,15.25,18]]);
-    var box=M(new THREE.BoxGeometry(3,4,3),std('#2f6fd6',{r:.45}));box.position.set(13.75,16,.25);inner.add(box);part(parts,box,[-5,0,17]);
+    tag(panel(-1.75-.44,.44,std('#b8894f',{r:.95}),[0,0,-30],[[18.25,30,45.75,48]]),'Sheathing','7/16 in. OSB on the outside','#9fb3c8');
+    var dw=tag(panel(1.75,.5,dry,[0,0,30],[[18.25,30,45.75,48],[12.25,14,15.25,18]]),'Drywall','1/2 in. board on the inside','#9fb3c8',true);
+    var box=M(new THREE.BoxGeometry(3,4,3),std('#2f6fd6',{r:.45}));box.position.set(13.75,16,.25);inner.add(box);part(parts,box,[-5,0,17]);tag(box,'Electrical box','Single gang, on the king stud','#f2c230');
     var cable=new THREE.Mesh(new THREE.TubeGeometry(curve([[13.75,18,.2],[13.75,22,.2],[12.6,24,.2],[6,24,.2],[-5,24,.2]]),48,.32,10,false),std('#f0c63c',{r:.55}));
-    inner.add(cable);part(parts,cable,[-3,0,10]);
+    inner.add(cable);part(parts,cable,[-3,0,10]);tag(cable,'NMD90 cable','12/2, yellow jacket','#f2c230');
     return {g:g,parts:parts,pitch:.1,yaw:-.5,app:'ThePrints3D',href:'#theprints3d',label:'A framed wall with a window opening, header, sill, cripples, sheathing, drywall and an electrical box. Take it apart to see each piece.',
-      update:function(e){dry.opacity=.3-.2*e}};
+      update:function(e){dw.userData.dyn=1-.67*e}};
   }
 
   // --- ENGINE: an inline four that keeps running while you take it apart
@@ -705,25 +727,25 @@ footer a:hover{color:var(--fg)}
     var g=new THREE.Group(),parts=[];g.position.y=-2.1;
     var xs=[-3.6,-1.2,1.2,3.6],ph=[0,Math.PI,Math.PI,0],R=.9,L=3.1;
     var alu=std('#c6ccd2',{r:.3,m:.8}),steel=std('#9da6ae',{r:.35,m:.85}),dark=std('#2a2f34',{r:.6,m:.3});
-    var block=M(new THREE.BoxGeometry(10.6,6.2,3.6),std('#8d99a2',{r:.4,m:.4,op:.18}),EDGE_L);block.position.y=2;g.add(block);part(parts,block,[0,0,0]);
+    var block=M(new THREE.BoxGeometry(10.6,6.2,3.6),std('#8d99a2',{r:.4,m:.4,op:.18}),EDGE_L);block.position.y=2;g.add(block);part(parts,block,[0,0,0]);tag(block,'Engine block','Holds the four cylinders','#9fb3c8',true);
     xs.forEach(function(x){var l=M(new THREE.CylinderGeometry(1.02,1.02,4.2,40,1,true),std('#8d99a2',{r:.4,m:.4,op:.1}),EDGE_L);l.position.set(x,1.1,0);block.add(l)});
-    var head=M(new THREE.BoxGeometry(10.6,1.3,3.6),std('#7a858e',{r:.45,m:.55}));head.position.y=5.75;g.add(head);part(parts,head,[0,3,0]);
-    var cover=M(new THREE.BoxGeometry(10.1,.9,3.0),std('#e2452b',{r:.35,m:.25}));cover.position.y=6.85;g.add(cover);part(parts,cover,[0,5.4,0]);
-    xs.forEach(function(x){var c=cyl(.2,.7,dark,16);c.position.set(x,.6,.85);cover.add(c)});
-    var pan=M(new THREE.BoxGeometry(10.2,1.5,3.2),dark);pan.position.y=-1.85;g.add(pan);part(parts,pan,[0,-3.6,0]);
-    var crank=new THREE.Group();g.add(crank);part(parts,crank,[0,-1.8,0]);
+    var head=M(new THREE.BoxGeometry(10.6,1.3,3.6),std('#7a858e',{r:.45,m:.55}));head.position.y=5.75;g.add(head);part(parts,head,[0,3,0]);tag(head,'Cylinder head','Valves and combustion chambers','#9fb3c8');
+    var cover=M(new THREE.BoxGeometry(10.1,.9,3.0),std('#e2452b',{r:.35,m:.25}));cover.position.y=6.85;g.add(cover);part(parts,cover,[0,5.4,0]);tag(cover,'Valve cover','Seals the top of the head','#e2452b');
+    xs.forEach(function(x){var c=cyl(.2,.7,dark,16);c.position.set(x,.6,.85);cover.add(c);tag(c,'Ignition coil','One per cylinder','#e2452b')});
+    var pan=M(new THREE.BoxGeometry(10.2,1.5,3.2),dark);pan.position.y=-1.85;g.add(pan);part(parts,pan,[0,-3.6,0]);tag(pan,'Oil pan','Holds the oil','#c9a227');
+    var crank=new THREE.Group();g.add(crank);part(parts,crank,[0,-1.8,0]);tag(crank,'Crankshaft','Turns up-and-down into rotation','#58a6ff');
     var cr=new THREE.Group();crank.add(cr);
     var shaft=cyl(.38,12.4,steel,24);shaft.rotation.z=Math.PI/2;cr.add(shaft);
     xs.forEach(function(x,i){var f=ph[i];
       var pin=cyl(.32,.9,steel,24);pin.rotation.z=Math.PI/2;pin.position.set(x,R*Math.cos(f),R*Math.sin(f));cr.add(pin);
       [-.58,.58].forEach(function(o){var w=M(new THREE.BoxGeometry(.26,R+1.0,1.15),steel);w.position.set(x+o,(R/2)*Math.cos(f),(R/2)*Math.sin(f));w.rotation.x=f;cr.add(w)});
     });
-    var fw=cyl(2.1,.45,dark,48);fw.rotation.z=Math.PI/2;fw.position.x=5.95;cr.add(fw);
+    var fw=cyl(2.1,.45,dark,48);fw.rotation.z=Math.PI/2;fw.position.x=5.95;cr.add(fw);tag(fw,'Flywheel','Smooths out the firing pulses','#58a6ff');
     for(var k=0;k<6;k++){var a=k*Math.PI/3,bt=M(new THREE.BoxGeometry(.2,.32,.32),steel);bt.position.set(6.22,1.4*Math.cos(a),1.4*Math.sin(a));cr.add(bt)}
-    var pul=cyl(.95,.55,dark,40);pul.rotation.z=Math.PI/2;pul.position.x=-6.05;cr.add(pul);
+    var pul=cyl(.95,.55,dark,40);pul.rotation.z=Math.PI/2;pul.position.x=-6.05;cr.add(pul);tag(pul,'Crank pulley','Drives the belts','#58a6ff');
     var pist=[],rods=[];
-    xs.forEach(function(x){var p=new THREE.Group();p.add(cyl(.95,1.3,alu,40));[.28,.46].forEach(function(y){var rg=cyl(.965,.07,dark,40,null);rg.position.y=y;p.add(rg)});g.add(p);pist.push(p);
-      var r=M(new THREE.BoxGeometry(.32,L,.5),steel);g.add(r);rods.push(r)});
+    xs.forEach(function(x,i){var p=new THREE.Group();p.add(cyl(.95,1.3,alu,40));[.28,.46].forEach(function(y){var rg=cyl(.965,.07,dark,40,null);rg.position.y=y;p.add(rg)});g.add(p);pist.push(p);tag(p,'Piston','Cylinder '+(i+1),'#58a6ff');
+      var r=M(new THREE.BoxGeometry(.32,L,.5),steel);g.add(r);rods.push(r);tag(r,'Connecting rod','Links piston '+(i+1)+' to the crank','#58a6ff')});
     var th=0;
     return {g:g,parts:parts,pitch:.28,yaw:-.6,app:'AutoMotive3D',href:'#automotive3d',label:'An inline-four engine running, with block, head, valve cover, pistons, rods, crankshaft and oil pan. Take it apart to see each piece.',
       update:function(e,dt){th+=dt*(reduce?.5:4.6);cr.rotation.x=th;
@@ -735,23 +757,91 @@ footer a:hover{color:var(--fg)}
   var models=[buildCircuit(),buildWall(),buildEngine()];
   models.forEach(function(m){root.add(m.g)});
 
+  // ---- nameplates and isolate, the same way the apps do it:
+  // tap = nameplate, double-tap = isolate (the rest drops to a faint outline),
+  // triple-tap = the rest goes away entirely, double-tap empty space = put it all back.
+  function prepare(m){
+    m.picks=[];
+    (function walk(o,owner){
+      if(o.userData.np){owner={o:o,mats:[],cur:1,line:1};o.userData.pk=owner;m.picks.push(owner)}
+      if(owner&&o.material&&!o.isLight){var mt=o.material.clone();o.material=mt;owner.mats.push({m:mt,line:!!o.isLineSegments,base:mt.opacity,bt:mt.transparent,bd:mt.depthWrite})}
+      o.children.forEach(function(c){walk(c,owner)});
+    })(m.g,null);
+  }
+  models.forEach(prepare);
+  var iso=null,isoHide=false,sel=null,hov=null,plateT1=0,plateT2=0;
+  var plate=document.getElementById('plate'),npName=document.getElementById('npName'),npFig=document.getElementById('npFig');
+  var isochip=document.getElementById('isochip'),isoName=document.getElementById('isoName');
+  function stands(p){if(!iso)return true;for(var o=p.o;o;o=o.parent)if(o===iso.o)return true;return false}
+  function fade(m,dt,snap){
+    var k=snap?1:Math.min(1,dt*10);
+    m.picks.forEach(function(p){
+      var away=!stands(p),tm=away?(isoHide?0:.04):1,tl=away?(isoHide?0:.55):1;
+      p.cur+=(tm-p.cur)*k;p.line+=(tl-p.line)*k;
+      var dyn=p.o.userData.dyn||1;
+      p.mats.forEach(function(x){var mul=x.line?p.line:p.cur*dyn,op=x.base*mul,full=mul>.995;
+        x.m.opacity=op;x.m.visible=op>.004;x.m.transparent=full?x.bt:true;x.m.depthWrite=full?x.bd:false});
+    });
+  }
+  var ray=new THREE.Raycaster(),ndc=new THREE.Vector2();
+  function pickAt(cx,cy){
+    var r=canvas.getBoundingClientRect();ndc.set((cx-r.left)/r.width*2-1,-(cy-r.top)/r.height*2+1);ray.setFromCamera(ndc,camera);
+    var hits=ray.intersectObject(models[cur].g,true),shell=null;
+    for(var i=0;i<hits.length;i++){var o=hits[i].object,p=null;
+      if(!o.isMesh||!o.material.visible)continue;
+      for(var q=o;q&&!p;q=q.parent)p=q.userData.pk||null;
+      if(!p||p.cur<.5)continue;
+      if(p.o.userData.np.shell){if(!shell)shell=p;continue}
+      return p}
+    return shell}
+  function showPlate(p){
+    clearTimeout(plateT1);clearTimeout(plateT2);
+    if(!p){if(!plate.hidden){plate.classList.add('leaving');plateT2=setTimeout(function(){plate.hidden=true;plate.classList.remove('leaving')},300)}return}
+    var np=p.o.userData.np;npName.textContent=np.n;npFig.textContent=np.f;plate.style.setProperty('--sys',np.c);
+    plate.classList.remove('leaving');plate.hidden=false;plate.style.animation='none';void plate.offsetWidth;plate.style.animation='';
+    if(iso!==p)plateT1=setTimeout(function(){showPlate(null)},2600);
+  }
+  function isolate(p,hide){iso=p;isoHide=hide;sel=p;showPlate(p);isochip.hidden=false;isoName.textContent=p.o.userData.np.n+(hide?' only':'')}
+  function unisolate(){var had=iso;iso=null;isoHide=false;isochip.hidden=true;if(had)showPlate(had)}
+  function resetPick(){iso=null;isoHide=false;sel=null;hov=null;isochip.hidden=true;clearTimeout(plateT1);clearTimeout(plateT2);plate.hidden=true;plate.classList.remove('leaving')}
+  document.getElementById('showAll').addEventListener('click',unisolate);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&iso)unisolate()});
+  var tapSeq={id:null,t:0,n:0};
+  function tap(x,y){
+    var p=pickAt(x,y),id=p||'empty',now=performance.now();
+    if(tapSeq.id===id&&now-tapSeq.t<340)tapSeq.n++;else tapSeq.n=1;
+    tapSeq.id=id;tapSeq.t=now;
+    if(p){manual=true;slider.value=Math.round(t*100);
+      if(tapSeq.n===1){sel=p;showPlate(p)}else if(tapSeq.n===2)isolate(p,false);else isolate(p,true)}
+    else if(tapSeq.n>=2){unisolate();sel=null;showPlate(null)}
+    else if(!iso){sel=null;showPlate(null)}
+  }
+
   function size(){var w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;
     camera.position.z=w/h<.9?52:w/h<1.2?44:38;camera.updateProjectionMatrix()}
   if('ResizeObserver' in window)new ResizeObserver(size).observe(stage);else addEventListener('resize',size);
   size();
 
   var cur=0,t=reduce?.6:0,manual=reduce,yaw=0,pitch=0,dragging=false,lx=0,ly=0,lastTouch=0,cycle0=performance.now(),visible=true,last=performance.now();
-  function show(i){cur=i;models.forEach(function(m,j){m.g.visible=j===i});
+  function show(i){cur=i;resetPick();models.forEach(function(m,j){m.g.visible=j===i});fade(models[i],0,true);
     tabs.forEach(function(b,j){b.setAttribute('aria-pressed',j===i?'true':'false')});
     var m=models[i];canvas.setAttribute('aria-label',m.label+' Drag to turn it.');
     capApp.innerHTML='This one\'s from <a href="'+m.href+'">'+m.app.replace('3','<svg class="n3" viewBox="0 0 62 100" aria-hidden="true"><path d="M7 7H55L29 40C46 38 57 50 57 66C57 84 45 94 31 94C19 94 11 88 6 80"/></svg><span class="sr">3</span>')+'</a>';}
   show(0);if(reduce)slider.value=60;
   tabs.forEach(function(b,j){b.addEventListener('click',function(){manual=true;t=slider.value/100;show(j)})});
   slider.addEventListener('input',function(){manual=true;t=slider.value/100});
-  canvas.addEventListener('pointerdown',function(e){dragging=true;lx=e.clientX;ly=e.clientY;lastTouch=performance.now();canvas.setPointerCapture(e.pointerId)});
-  canvas.addEventListener('pointermove',function(e){if(!dragging)return;yaw+=(e.clientX-lx)*.008;pitch=Math.max(-.5,Math.min(.6,pitch+(e.clientY-ly)*.005));lx=e.clientX;ly=e.clientY;lastTouch=performance.now()});
-  function up(){dragging=false}
-  canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
+  var down=null,hoverAt=0;
+  canvas.addEventListener('pointerdown',function(e){dragging=true;lx=e.clientX;ly=e.clientY;down={x:e.clientX,y:e.clientY,t:performance.now()};lastTouch=performance.now();canvas.setPointerCapture(e.pointerId)});
+  canvas.addEventListener('pointermove',function(e){
+    if(!dragging){
+      if(e.pointerType==='mouse'){var n=performance.now();if(n-hoverAt>60){hoverAt=n;var p=pickAt(e.clientX,e.clientY);canvas.style.cursor=p?'pointer':'';if(p!==hov){hov=p;if(p)showPlate(p)}}}
+      return}
+    yaw+=(e.clientX-lx)*.008;pitch=Math.max(-.5,Math.min(.6,pitch+(e.clientY-ly)*.005));lx=e.clientX;ly=e.clientY;lastTouch=performance.now()});
+  canvas.addEventListener('pointerup',function(e){dragging=false;
+    if(down&&Math.hypot(e.clientX-down.x,e.clientY-down.y)<8&&performance.now()-down.t<400)tap(e.clientX,e.clientY);
+    down=null});
+  canvas.addEventListener('pointercancel',function(){dragging=false;down=null});
+  canvas.addEventListener('pointerleave',function(){hov=null;canvas.style.cursor=''});
   if('IntersectionObserver' in window)new IntersectionObserver(function(es){visible=es[0].isIntersecting},{threshold:.05}).observe(stage);
 
   function apply(m,e){m.parts.forEach(function(p){p.position.copy(p.userData.b).addScaledVector(p.userData.d,e)})}
@@ -764,7 +854,7 @@ footer a:hover{color:var(--fg)}
     if(!reduce&&!dragging&&now-lastTouch>2500)yaw+=dt*.16;
     var m=models[cur],e=t*t*(3-2*t);
     root.rotation.set(m.pitch+pitch,m.yaw+yaw,0);
-    apply(m,e);m.update(e,dt);
+    apply(m,e);m.update(e,dt);fade(m,dt);
     renderer.render(scene,camera);
   }
   requestAnimationFrame(loop);
