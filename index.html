@@ -3,173 +3,772 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>The 3D Learning Family</title>
-<meta name="description" content="3D apps for circuits, buildings and engines. Build the system, take it apart, and see what happens under load.">
-<meta name="theme-color" content="#0b1120">
-<meta property="og:title" content="The 3D Learning Family">
-<meta property="og:description" content="Making the invisible visible. 3D apps for circuits, buildings and engines.">
+<title>3D Learning Family</title>
+<meta name="description" content="Making the invisible visible. 3D apps you can see, work and take apart: CircuiTry3D for circuits, ThePrints3D for framing, AutoMotive3D for engines.">
+<meta name="theme-color" content="#0d1317">
+<meta property="og:title" content="3D Learning Family">
+<meta property="og:description" content="Making the invisible visible. Visual learning increases retention.">
 <meta property="og:type" content="website">
+<meta property="og:image" content="media/am-cmp-b.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#0d1317; --surface:#151d22; --line:#26333b; --fg:#e9eef0; --muted:#9aa9b1;
+  --accent:#f2a33a; --accent-ink:#1a1206; --glass:rgba(21,29,34,.8);
+  --display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#eef1f2; --surface:#ffffff; --line:#d3dadd; --fg:#10181c; --muted:#4f5f67;
+  --accent:#b8690c; --accent-ink:#fff8ee; --glass:rgba(255,255,255,.82); color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#eef1f2; --surface:#ffffff; --line:#d3dadd; --fg:#10181c; --muted:#4f5f67;
+  --accent:#b8690c; --accent-ink:#fff8ee; --glass:rgba(255,255,255,.82); color-scheme:light}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px;-webkit-text-size-adjust:100%}
+html,body{margin:0;background:var(--bg);color:var(--fg)}
+body{font-family:var(--body);font-size:1rem;line-height:1.6;-webkit-font-smoothing:antialiased}
+img,video{display:block;max-width:100%}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+h1,h2,h3,h4{font-family:var(--display);font-stretch:112%;line-height:1.02;margin:0;text-wrap:balance;letter-spacing:-.01em}
+p{margin:0}
+ol,ul{list-style:none;margin:0;padding:0}
+figure{margin:0}
+.label{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+/* flat-top brand 3 */
+.n3{display:inline-block;height:.74em;width:.47em;vertical-align:0;margin:0 .01em;overflow:visible}
+.n3 path{fill:none;stroke:currentColor;stroke-width:13;stroke-linejoin:miter;stroke-linecap:butt}
+
+/* header */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:20;background:var(--bg)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:56px}
+.mark{font-family:var(--display);font-weight:800;font-stretch:118%;font-size:1.05rem;text-decoration:none;letter-spacing:-.01em;white-space:nowrap}
+.mark b{color:var(--accent);font-weight:900}
+.top nav{display:flex;gap:2px}
+.top nav a{text-decoration:none;font-size:.9rem;color:var(--muted);padding:0 10px;min-height:48px;display:inline-flex;align-items:center}
+.top nav a:hover{color:var(--fg)}
+@media (max-width:700px){.top nav a.opt{display:none}}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 20px;border-radius:10px;font-weight:600;text-decoration:none;border:1px solid var(--line);transition:transform .15s ease}
+.btn:hover{transform:translateY(-1px)}
+.btn.solid{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1fr;grid-template-areas:"copy" "viz";gap:28px;padding-block:40px 32px}
+@media (min-width:960px){.hero{grid-template-columns:.95fr 1.1fr;grid-template-areas:"copy viz";align-items:center;gap:48px;padding-block:72px 56px}}
+.hero-copy{grid-area:copy;display:grid;gap:22px;min-width:0;align-content:center}
+.hero h1{font-size:clamp(2.7rem,7.2vw,5.2rem);font-weight:900}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.lede{font-size:1.14rem;color:var(--muted);max-width:34em}
+.ctas{display:flex;flex-wrap:wrap;gap:10px}
+.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:6px}
+.trio a{display:grid;grid-template-columns:32px 1fr;align-items:center;column-gap:8px;padding:8px;border:1px solid var(--line);border-radius:12px;text-decoration:none;min-height:56px;min-width:0}
+.trio a:hover{border-color:var(--accent)}
+.trio img{width:32px;height:32px;border-radius:8px;grid-row:span 2}
+.trio b{font-family:var(--display);font-stretch:100%;font-weight:800;font-size:.85rem;line-height:1.15;white-space:nowrap}
+.trio small{color:var(--muted);font-size:.78rem;line-height:1.2}
+@media (max-width:1100px) and (min-width:960px),(max-width:560px){.trio{grid-template-columns:1fr}.trio a{min-height:52px}}
+
+.viz{grid-area:viz;min-width:0;display:grid;gap:8px}
+.stage{position:relative;height:clamp(440px,48vw,560px);border-radius:20px;overflow:hidden;
+  background:radial-gradient(110% 80% at 50% 38%,color-mix(in srgb,var(--accent) 11%,var(--surface)) 0%,var(--surface) 62%);border:1px solid var(--line);
+  display:grid;grid-template-rows:1fr auto;grid-template-areas:"view" "dock"}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;touch-action:pan-y;cursor:grab}
+.stage canvas:active{cursor:grabbing}
+.nogl{grid-area:view;place-self:center;z-index:10;color:var(--muted);padding:16px;text-align:center}
+.dock{grid-area:dock;position:relative;z-index:10;margin:10px;padding:6px;border-radius:14px;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);display:grid;gap:4px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.tabs button{min-height:48px;border:0;border-radius:10px;background:transparent;color:var(--muted);font:600 .92rem var(--body);cursor:pointer;padding:0 12px}
+.tabs button:hover{color:var(--fg)}
+.tabs button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.range{display:flex;align-items:center;gap:12px;padding:0 10px}
+.range label{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.range input{flex:1;min-width:0;height:48px;accent-color:var(--accent);margin:0}
+@media (min-width:640px){.dock{grid-template-columns:auto 1fr;align-items:center}.tabs{grid-template-columns:repeat(3,auto)}}
+.cap{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:.88rem;color:var(--muted);min-height:48px;padding:0 4px}
+.cap a{color:var(--fg);font-weight:600;text-decoration:none;border-bottom:1px solid var(--line);padding:12px 0}
+.cap a:hover{border-color:var(--accent)}
+
+/* thesis */
+.thesis{border-block:1px solid var(--line);background:var(--surface)}
+.thesis .wrap{padding-block:64px;display:grid;gap:32px}
+.thesis h2{font-size:clamp(2.1rem,5.8vw,3.8rem);font-weight:900;max-width:16ch}
+.thesis h2 span{color:var(--accent)}
+.thesis p.body{font-size:1.1rem;max-width:38em;color:var(--muted)}
+.verbs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.verb{background:var(--bg);padding:22px;display:grid;gap:6px;min-width:0}
+.verb h3{font-size:1.4rem;font-weight:800}
+.verb p{color:var(--muted)}
+
+/* apps intro */
+.intro{padding-block:88px 40px;display:grid;gap:12px}
+.intro h2{font-size:clamp(2rem,5vw,3.2rem);font-weight:900}
+.intro p{color:var(--muted);max-width:40em;font-size:1.06rem}
+
+/* chapters: each app in its own palette; only the wordmark is shared */
+.ch{background:var(--c-bg);color:var(--c-fg);padding-block:88px;position:relative;overflow:clip}
+.ch .label{color:var(--c-mut)}
+.ct{--c-bg:#0b1d3a;--c-fg:#eaf2ff;--c-mut:#a5b8d4;--c-acc:#22c55e;--c-on:#04170b;--c-hi:#f97316;--c-line:rgba(234,242,255,.14);--c-panel:rgba(234,242,255,.05)}
+.tp{--c-bg:#e9eef5;--c-fg:#122238;--c-mut:#4d5f7a;--c-acc:#1f5fbf;--c-on:#ffffff;--c-hi:#d9711c;--c-line:rgba(18,34,56,.15);--c-panel:rgba(255,255,255,.6);
+  background-image:linear-gradient(rgba(31,95,191,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(31,95,191,.07) 1px,transparent 1px);background-size:32px 32px}
+.am{--c-bg:#141517;--c-fg:#f1f0ee;--c-mut:#a9a59f;--c-acc:#e2452b;--c-on:#ffffff;--c-hi:#f2a33a;--c-line:rgba(255,255,255,.12);--c-panel:rgba(255,255,255,.04)}
+.ch-head{display:grid;gap:40px;align-items:center}
+@media (min-width:900px){.ch-head{grid-template-columns:minmax(0,1fr) 300px;gap:64px}}
+.ch-copy{display:grid;gap:20px;min-width:0}
+.ch-id{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.ch-id .ico{width:64px;height:64px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.status{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;padding:6px 10px;border-radius:8px;border:1px solid var(--c-line)}
+.status::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--c-acc);margin-right:8px;vertical-align:1px}
+.am .status::before{background:var(--c-hi)}
+.wmh img{height:clamp(40px,6.4vw,64px);width:auto;max-width:100%}
+.tag{font-family:var(--display);font-weight:800;font-stretch:112%;font-size:clamp(1.5rem,3.4vw,2.2rem);line-height:1.1;color:var(--c-fg)}
+.tag span{color:var(--c-hi)}
+.pitch{font-size:1.08rem;color:var(--c-mut);max-width:36em}
+.spec{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--c-line);border:1px solid var(--c-line);border-radius:12px;overflow:hidden;margin:4px 0 0;max-width:640px}
+.spec div{background:var(--c-bg);padding:12px 14px}
+.tp .spec div{background:#f4f7fb}
+.spec dt{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--c-mut)}
+.spec dd{margin:2px 0 0;font-weight:600}
+@media (max-width:560px){.spec{grid-template-columns:1fr}}
+.go{display:flex;flex-wrap:wrap;gap:10px}
+.go a{display:inline-flex;align-items:center;min-height:48px;padding:0 18px;border-radius:10px;text-decoration:none;font-weight:600;border:1px solid var(--c-line);transition:transform .15s ease}
+.go a:hover{transform:translateY(-1px)}
+.go a.p{background:var(--c-acc);color:var(--c-on);border-color:transparent}
+
+.phone{justify-self:center;width:min(300px,78vw);display:grid;gap:10px}
+.phone .bez{padding:9px;border-radius:38px;background:#05070a;box-shadow:0 30px 80px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.08)}
+.phone video{width:100%;aspect-ratio:9/16;border-radius:30px;object-fit:cover;background:#000}
+.phone figcaption{text-align:center;font-size:.84rem;color:var(--c-mut)}
+
+/* scroll-linked beats */
+.story{display:grid;gap:28px;margin-top:80px}
+.screen .frame{position:relative;border-radius:18px;overflow:hidden;background:#000;border:1px solid var(--c-line);aspect-ratio:4/3;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.screen .m,.inl .m{width:100%;height:100%;object-fit:cover}
+.screen .m{position:absolute;inset:0;opacity:0;transition:opacity .5s ease}
+.screen .m.on{opacity:1}
+.tp .screen .frame{aspect-ratio:auto;width:min(340px,100%);height:min(70vh,640px);margin-left:auto;border-radius:34px;padding:8px;background:#05070a;border:0}
+.tp .screen .m{inset:8px;width:calc(100% - 16px);height:calc(100% - 16px);border-radius:27px}
+.beat{display:grid;gap:12px;padding-block:28px;border-top:1px solid var(--c-line)}
+.beat .n{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;color:var(--c-hi)}
+.beat h3{font-size:clamp(1.6rem,3.4vw,2.3rem);font-weight:850}
+.beat p{color:var(--c-mut);font-size:1.06rem;max-width:30em}
+.inl{border-radius:16px;overflow:hidden;border:1px solid var(--c-line);background:#000;margin-top:8px;aspect-ratio:4/3}
+.tp .inl{aspect-ratio:auto;width:min(300px,82%);border-radius:28px;border:8px solid #05070a}
+@media (min-width:960px){
+  .story{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:64px;align-items:start}
+  .tp .story{grid-template-columns:minmax(0,1fr) minmax(0,.8fr)}
+  .story .screen{grid-column:2;grid-row:1;position:sticky;top:max(88px,calc(50vh - 280px))}
+  .tp .story .screen{top:max(80px,calc(50vh - 320px))}
+  .beats{grid-column:1;grid-row:1}
+  .beat{min-height:64vh;align-content:center;opacity:.4;transition:opacity .35s ease;border-top:0}
+  .beat.on{opacity:1}
+  .beat .inl{display:none}
+}
+@media (max-width:959px){.story .screen{display:none}}
+
+/* AutoMotive3D: real teardown slider + gallery */
+.cmp-wrap{margin-top:80px;display:grid;gap:14px}
+.cmp-wrap h3{font-size:clamp(1.6rem,3.4vw,2.3rem);font-weight:850}
+.cmp-wrap>p{color:var(--c-mut);max-width:40em}
+.cmp{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--c-line);background:#0a0c10;aspect-ratio:1220/740;display:grid;grid-template-rows:1fr auto;grid-template-areas:"v" "d"}
+.cmp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.cmp .b{opacity:0}
+.cmp .dock{grid-area:d;--glass:rgba(20,21,23,.8);--line:rgba(255,255,255,.14);display:flex;align-items:center;gap:12px;padding:0 14px;color:#f1f0ee}
+.cmp .dock span{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.cmp .dock input{flex:1;min-width:0;height:48px;accent-color:#e2452b;margin:0}
+@media (max-width:520px){.cmp{aspect-ratio:auto;height:330px}.cmp img{height:calc(100% - 68px)}}
+.shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:16px;margin-top:40px}
+.shots figure{display:grid;gap:10px}
+.shots img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;border:1px solid var(--c-line)}
+.shots figcaption{color:var(--c-mut);font-size:.95rem}
+.shots figcaption b{color:var(--c-fg);font-weight:600}
+
+/* about */
+section.block{padding-block:88px}
+.head{display:grid;gap:10px;margin-bottom:28px}
+.head h2{font-size:clamp(1.9rem,4.8vw,3rem);font-weight:900}
+.builder{display:grid;gap:32px;grid-template-columns:1fr}
+@media (min-width:900px){.builder{grid-template-columns:1.05fr .95fr;align-items:start;gap:56px}}
+.builder h2{font-size:clamp(1.9rem,4.8vw,3rem);font-weight:900}
+.builder .txt{display:grid;gap:16px;font-size:1.06rem;max-width:36em}
+.facts{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:0}
+.facts div{display:grid;grid-template-columns:9em 1fr;gap:12px;padding:14px 18px;border-top:1px solid var(--line)}
+.facts div:first-child{border-top:0}
+.facts dt{font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.facts dd{margin:0;min-width:0}
+.quote{margin:20px 0 0;padding:22px;border-radius:16px;background:var(--surface);border:1px solid var(--line);display:grid;gap:12px}
+.quote blockquote{margin:0;font-size:1.04rem;line-height:1.55}
+.quote figcaption{font-size:.85rem;color:var(--muted)}
+
+/* ways in */
+.ways{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:16px}
+.way{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;display:grid;grid-template-rows:auto 1fr auto;gap:10px;min-width:0}
+.way h3{font-size:1.3rem;font-weight:800}
+.way p{color:var(--muted)}
+.way a.link{color:var(--accent);font-weight:600;text-decoration:none;min-height:48px;display:inline-flex;align-items:center}
+.contact{margin-top:20px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:12px 18px;border:1px solid var(--line);border-radius:16px}
+.contact code{font-family:var(--mono);font-size:1rem;user-select:all}
+.contact button{min-height:48px;padding:0 18px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--fg);font:inherit;font-weight:600;cursor:pointer}
+
+/* in the shop */
+.shop{border-top:1px solid var(--line)}
+.shop ul{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.shop li{background:var(--bg);padding:18px 20px;display:grid;gap:4px;align-content:start}
+.shop li b{font-family:var(--display);font-stretch:110%;font-size:1.15rem}
+.shop li span{color:var(--muted);font-size:.95rem}
+.shop li a{color:var(--accent);font-weight:600;text-decoration:none;font-size:.95rem;min-height:40px;display:inline-flex;align-items:center}
+
+footer{border-top:1px solid var(--line);padding-block:32px calc(32px + env(safe-area-inset-bottom,0px));color:var(--muted);font-size:.9rem}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+footer a{text-decoration:none}
+footer a:hover{color:var(--fg)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn,.go a,.beat,.screen .m{transition:none}}
+</style>
 </head>
 <body>
 
-<header class="bar">
-  <div class="wrap bar-in">
-    <a class="brand" href="#top" aria-label="The 3D Learning Family, home">
-      <span class="c-blue">The</span><span class="c-green">3D</span><span class="c-blue">Learning</span><span class="c-orange">Family</span>
-    </a>
+<header class="top">
+  <div class="wrap">
+    <a class="mark bn" href="#top">3D Learning <b>Family</b></a>
     <nav aria-label="Sections">
       <a href="#apps">Apps</a>
-      <a href="#fuse">F.U.S.E.</a>
-      <a href="#about">About</a>
-      <a href="#contact">Contact</a>
+      <a href="#why" class="opt">Why 3D</a>
+      <a href="#about" class="opt">About</a>
+      <a href="#work">Work with us</a>
     </nav>
   </div>
 </header>
 
 <main id="top">
-
-  <section class="hero wrap">
-    <p class="label">The 3D Learning Family</p>
-    <h1>Making the invisible visible.</h1>
-    <p class="lede">Current in a wire, load in a wall, force in an engine. These things are hard to picture from a textbook. Our apps put them in 3D, where you can build them, take them apart and watch what happens when they're pushed too far.</p>
-    <div class="actions">
-      <a class="btn btn-solid" href="#apps">View the apps</a>
-      <a class="btn btn-line" href="#contact">Schools and partners</a>
-    </div>
-
-    <dl class="facts">
-      <div><dt>Apps</dt><dd>3</dd></div>
-      <div><dt>On Google Play</dt><dd>2</dd></div>
-      <div><dt>Closed testing</dt><dd>1</dd></div>
-      <div><dt>Built in</dt><dd>Surrey, BC</dd></div>
-    </dl>
-  </section>
-
-  <section id="apps" class="wrap block">
-    <div class="block-head">
-      <span class="num">01</span>
-      <h2>The apps</h2>
-      <p>One set of controls across all three. Learn one and you can find your way around the others.</p>
-    </div>
-
-    <ol class="apps">
-      <li class="app">
-        <img class="app-icon" src="assets/circuitry3d-icon.webp" width="72" height="72" alt="">
-        <div class="app-main">
-          <img class="app-wm" src="assets/circuitry3d-wordmark.webp" width="480" height="89" alt="CircuiTry3D">
-          <p>Build electrical circuits in 3D and follow the current through every component. Overload a part and see why it fails.</p>
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="label bn">The 3D Learning Family</span>
+        <h1>Making the invisible <em>visible.</em></h1>
+        <p class="lede">Current in a wire. The framing inside a wall. What an engine does at 6,000 rpm. Most of how the world works stays hidden until something breaks or someone explains it. These apps build it in 3D and let you take it apart.</p>
+        <div class="ctas">
+          <a class="btn solid" href="#apps">See the apps</a>
+          <a class="btn" href="#why">Why 3D</a>
         </div>
-        <dl class="app-spec">
-          <div><dt>Subject</dt><dd>Electrical</dd></div>
-          <div><dt>Status</dt><dd class="s-live">Google Play</dd></div>
-        </dl>
-        <a class="app-link" href="https://circuitry3d.app/">circuitry3d.app</a>
-      </li>
-
-      <li class="app">
-        <img class="app-icon" src="assets/theprints3d-icon.webp" width="72" height="72" alt="">
-        <div class="app-main">
-          <img class="app-wm" src="assets/theprints3d-wordmark.webp" width="480" height="71" alt="ThePrints3D">
-          <p>Turn a floor plan into a framed 3D structure. Walk through it, separate the layers and review it member by member.</p>
+        <nav class="trio" aria-label="The three apps">
+          <a href="#circuitry3d"><img src="assets/circuitry3d-icon.webp" alt="" width="40" height="40"><b class="bn">CircuiTry3D</b><small>Circuits</small></a>
+          <a href="#theprints3d"><img src="assets/theprints3d-icon.webp" alt="" width="40" height="40"><b class="bn">ThePrints3D</b><small>Framing</small></a>
+          <a href="#automotive3d"><img src="assets/automotive3d-icon.webp" alt="" width="40" height="40"><b class="bn">AutoMotive3D</b><small>Engines</small></a>
+        </nav>
+      </div>
+      <figure class="viz">
+        <div class="stage" id="stage">
+          <canvas id="gl" aria-label="A 3D model you can turn and take apart."></canvas>
+          <p class="nogl" id="nogl" hidden>The 3D model needs WebGL, which this browser has turned off.</p>
+          <div class="dock">
+            <div class="tabs" role="group" aria-label="Choose a model">
+              <button type="button" data-m="0" aria-pressed="true">Circuit</button>
+              <button type="button" data-m="1" aria-pressed="false">Framing</button>
+              <button type="button" data-m="2" aria-pressed="false">Engine</button>
+            </div>
+            <div class="range">
+              <label for="explode">Take it apart</label>
+              <input id="explode" type="range" min="0" max="100" value="0">
+            </div>
+          </div>
         </div>
-        <dl class="app-spec">
-          <div><dt>Subject</dt><dd>Framing</dd></div>
-          <div><dt>Status</dt><dd class="s-live">Google Play</dd></div>
-        </dl>
-        <a class="app-link" href="https://theprints3d.com/">theprints3d.com</a>
-      </li>
+        <figcaption class="cap"><span>Drag to turn it.</span><span id="capApp">This one's from <a href="#circuitry3d" class="bn">CircuiTry3D</a></span></figcaption>
+      </figure>
+    </section>
+  </div>
 
-      <li class="app">
-        <img class="app-icon" src="assets/automotive3d-icon.webp" width="72" height="72" alt="">
-        <div class="app-main">
-          <img class="app-wm" src="assets/automotive3d-wordmark.webp" width="480" height="63" alt="AutoMotive3D">
-          <p>Assemble an engine part by part, run it on the dyno, then tear it down to find what gave out.</p>
-        </div>
-        <dl class="app-spec">
-          <div><dt>Subject</dt><dd>Automotive</dd></div>
-          <div><dt>Status</dt><dd class="s-test">Closed testing</dd></div>
-        </dl>
-        <a class="app-link" href="https://automotive3d.ca/">automotive3d.ca</a>
-      </li>
-    </ol>
-  </section>
-
-  <section id="fuse" class="wrap block">
-    <div class="block-head">
-      <span class="num">02</span>
-      <h2>F.U.S.E.<sup>™</sup></h2>
-      <p>Failure Understanding Simulation Engine</p>
-    </div>
-    <div class="cols">
-      <p>Knowing that a part fails is useful. Knowing why it failed is what sticks. F.U.S.E. works from real component specifications, so when a fuse opens, a joist deflects or a bearing seizes, the cause is shown, not just the result.</p>
-      <p>It was first built for CircuiTry3D to show what a fuse actually does. It now runs underneath every app in the family.</p>
-    </div>
-  </section>
-
-  <section id="about" class="wrap block">
-    <div class="block-head">
-      <span class="num">03</span>
-      <h2>About</h2>
-    </div>
-    <div class="cols">
-      <p class="pull">Built by a tradesperson, for the people learning the trade.</p>
-      <div>
-        <p>Mitchell Lorin McKnight is a carpenter and electrical apprentice based in Surrey, British Columbia. In his first year of electrical school he struggled to picture what the circuit theory described. He wanted something he could turn over and look at from every side. He couldn't find one, so he built it.</p>
-        <p>CircuiTry3D launched on Google Play in March 2026. ThePrints3D applied the same approach to framing, and AutoMotive3D to engines.</p>
+  <section class="thesis" id="why">
+    <div class="wrap">
+      <span class="label">Why 3D</span>
+      <h2>Visual learning <span>increases retention.</span></h2>
+      <p class="body">That's the reason every one of these apps exists. You remember what you've seen, and you remember it better when you've turned it over and changed it yourself. So each app is the same tool pointed at a different subject: a 3D model you can see, work and take apart.</p>
+      <div class="verbs">
+        <div class="verb"><span class="label">One</span><h3>See it</h3><p>Real geometry from any angle. Orbit it, zoom in, look behind it.</p></div>
+        <div class="verb"><span class="label">Two</span><h3>Work it</h3><p>Change a value, add a part, run it. Watch what happens and why.</p></div>
+        <div class="verb"><span class="label">Three</span><h3>Take it apart</h3><p>Explode the model and see every piece and where it goes.</p></div>
       </div>
     </div>
   </section>
 
-  <section id="contact" class="wrap block">
-    <div class="block-head">
-      <span class="num">04</span>
-      <h2>Work with us</h2>
+  <div class="wrap intro" id="apps">
+    <span class="label">The apps</span>
+    <h2>Same tool. Different subject.</h2>
+    <p>One set of controls across all three, so once you know one you can find your way around the others. Two are on Google Play now and the third is in closed testing.</p>
+  </div>
+
+  <!-- CircuiTry3D -->
+  <section class="ch ct" id="circuitry3d" aria-labelledby="ct-h">
+    <div class="wrap">
+      <div class="ch-head">
+        <div class="ch-copy">
+          <div class="ch-id"><img class="ico" src="assets/circuitry3d-icon.webp" alt="" width="64" height="64"><span class="status">Live on Google Play</span></div>
+          <h2 class="wmh" id="ct-h"><img src="assets/circuitry3d-wordmark.webp" alt="CircuiTry3D" width="480" height="89"></h2>
+          <p class="tag">Illuminate <span>electricity.</span></p>
+          <p class="pitch">Build circuits in 3D and watch the current move. The W.I.R.E. engine works out watts, current, resistance and voltage as you build, and F.U.S.E. shows which part fails first and why.</p>
+          <dl class="spec">
+            <div><dt>Subject</dt><dd>Electrical</dd></div>
+            <div><dt>Engines</dt><dd>W.I.R.E. and F.U.S.E.</dd></div>
+            <div><dt>Get it</dt><dd>Free on Google Play</dd></div>
+          </dl>
+          <div class="go">
+            <a class="p" href="https://play.google.com/store/apps/details?id=com.circuitry3d.app" target="_blank" rel="noopener">Get it on Google Play</a>
+            <a href="https://circuitry3d.app" target="_blank" rel="noopener">circuitry3d.app ↗</a>
+          </div>
+        </div>
+        <figure class="phone">
+          <div class="bez"><video data-auto muted loop playsinline preload="none" poster="media/ct-promo.jpg" src="media/ct-promo.mp4" aria-label="CircuiTry3D promo: components stress-tested until they fail"></video></div>
+          <figcaption>Component Arena, from the app</figcaption>
+        </figure>
+      </div>
+
+      <div class="story">
+        <div class="screen" aria-hidden="true"><div class="frame">
+          <video class="m" muted loop playsinline preload="none" poster="media/ct-build.jpg" src="media/ct-build.mp4"></video>
+          <video class="m" muted loop playsinline preload="none" poster="media/ct-arena.jpg" src="media/ct-arena.mp4"></video>
+          <img class="m" src="media/ct-overload.webp" alt="" loading="lazy">
+          <img class="m" src="media/ct-burst.webp" alt="" loading="lazy">
+        </div></div>
+        <ol class="beats">
+          <li class="beat"><span class="n">01 · BUILD</span><h3>Build it and watch it run.</h3><p>Lay out a circuit on the bench and W.I.R.E. works out the numbers at every part while you build. The current moves along the wires, so you can follow where it goes.</p>
+            <div class="inl"><video class="m" data-auto muted loop playsinline preload="none" poster="media/ct-build.jpg" src="media/ct-build.mp4"></video></div></li>
+          <li class="beat"><span class="n">02 · ARENA</span><h3>Put it in the Arena.</h3><p>The Component Arena runs parts against their real ratings under different conditions: lab bench, arctic cold, engine bay, desert. Then it ranks how they held up.</p>
+            <div class="inl"><video class="m" data-auto muted loop playsinline preload="none" poster="media/ct-arena.jpg" src="media/ct-arena.mp4"></video></div></li>
+          <li class="beat"><span class="n">03 · OVERLOAD</span><h3>Push it past its rating.</h3><p>Run a part harder than it's rated for and the readout says by how much. That capacitor is sitting at 4,267% of its rated watts.</p>
+            <div class="inl"><img class="m" src="media/ct-overload.webp" alt="A capacitor in CircuiTry3D at 4,267% of its rated wattage" loading="lazy"></div></li>
+          <li class="beat"><span class="n">04 · F.U.S.E.</span><h3>See why it failed.</h3><p>F.U.S.E. shows the failure as it happens and which part let go first. You see the reason, not just the result, and that's the part you remember.</p>
+            <div class="inl"><img class="m" src="media/ct-burst.webp" alt="A capacitor casing bursting under overload in CircuiTry3D" loading="lazy"></div></li>
+        </ol>
+      </div>
     </div>
-    <ul class="rows">
-      <li>
-        <h3>Schools and instructors</h3>
-        <p>Trial the apps with a class before committing. Licensing is available for programs and departments.</p>
-        <a href="mailto:info@circuitry3d.app?subject=3D%20Learning%20Family%20for%20our%20program">Get in touch</a>
-      </li>
-      <li>
-        <h3>Manufacturers</h3>
-        <p>Put accurate models of your components in front of the apprentices and students who will be specifying them.</p>
-        <a href="mailto:info@circuitry3d.app?subject=Our%20components%20in%20the%203D%20apps">Get in touch</a>
-      </li>
-      <li>
-        <h3>Testers</h3>
-        <p>Android users can join closed testing for new releases. Tell us which app and we'll send the steps.</p>
-        <a href="mailto:info@circuitry3d.app?subject=Testing%20the%203D%20apps">Get in touch</a>
-      </li>
-    </ul>
   </section>
 
-  <section class="wrap block dev">
-    <div class="block-head">
-      <span class="num">05</span>
-      <h2>In development</h2>
+  <!-- ThePrints3D -->
+  <section class="ch tp" id="theprints3d" aria-labelledby="tp-h">
+    <div class="wrap">
+      <div class="ch-head">
+        <div class="ch-copy">
+          <div class="ch-id"><img class="ico" src="assets/theprints3d-icon.webp" alt="" width="64" height="64"><span class="status">Live on Google Play</span></div>
+          <h2 class="wmh" id="tp-h"><img src="assets/theprints3d-wordmark.webp" alt="ThePrints3D" width="480" height="71"></h2>
+          <p class="tag">2D plan in. <span>3D framing out.</span></p>
+          <p class="pitch">Put a floor plan underneath, trace it and frame it in wood, steel or engineered lumber. Then explode the model and see every stud, plate and header.</p>
+          <dl class="spec">
+            <div><dt>Subject</dt><dd>Framing</dd></div>
+            <div><dt>Materials</dt><dd>Wood, steel, engineered</dd></div>
+            <div><dt>Get it</dt><dd>Free on Google Play</dd></div>
+          </dl>
+          <div class="go">
+            <a class="p" href="https://play.google.com/store/apps/details?id=com.theprints3d.app" target="_blank" rel="noopener">Get it on Google Play</a>
+            <a href="https://theprints3d.com" target="_blank" rel="noopener">theprints3d.com ↗</a>
+          </div>
+        </div>
+        <figure class="phone">
+          <div class="bez"><video data-auto muted loop playsinline preload="none" poster="media/tp-promo.jpg" src="media/tp-promo.mp4" aria-label="ThePrints3D promo: a 2D plan turned into a 3D framed model"></video></div>
+          <figcaption>A plan becoming a building, in the app</figcaption>
+        </figure>
+      </div>
+
+      <div class="story">
+        <div class="screen" aria-hidden="true"><div class="frame">
+          <img class="m" src="media/tp-build-controls.webp" alt="">
+          <img class="m" src="media/tp-material-takeoff.webp" alt="" loading="lazy">
+          <img class="m" src="media/tp-standing-model.webp" alt="" loading="lazy">
+          <img class="m" src="media/tp-layer-controls.webp" alt="" loading="lazy">
+        </div></div>
+        <ol class="beats">
+          <li class="beat"><span class="n">01 · PLAN</span><h3>Put the plan underneath.</h3><p>Bring in a floor plan and trace over it. Floors, framing, roof, plumbing, electrical and HVAC each get their own step, in the order a build goes.</p>
+            <div class="inl"><img class="m" src="media/tp-build-controls.webp" alt="ThePrints3D floor step with a plan underneath" loading="lazy"></div></li>
+          <li class="beat"><span class="n">02 · STAND IT UP</span><h3>Stand it up.</h3><p>The walls you traced become a framed building you can orbit. Tap a wall to change it, or add doors, windows and fixtures.</p>
+            <div class="inl"><img class="m" src="media/tp-material-takeoff.webp" alt="A standing 3D building in ThePrints3D" loading="lazy"></div></li>
+          <li class="beat"><span class="n">03 · EXPLODE</span><h3>Explode it.</h3><p>Pull the floors apart and every joist, stud, plate and header is right there, where it goes.</p>
+            <div class="inl"><img class="m" src="media/tp-standing-model.webp" alt="An exploded building model in ThePrints3D, floor by floor" loading="lazy"></div></li>
+          <li class="beat"><span class="n">04 · COUNT</span><h3>Count it.</h3><p>The material takeoff keeps count as you go: feet of wall framing, studs at 16 inches on centre, plate stock and sheathing sheets.</p>
+            <div class="inl"><img class="m" src="media/tp-layer-controls.webp" alt="ThePrints3D material takeoff list" loading="lazy"></div></li>
+        </ol>
+      </div>
     </div>
-    <ul class="dev-list">
-      <li><span>AnyBody3D</span>The human body and its systems</li>
-      <li><span>TheCell3D</span>A living cell, organelle by organelle</li>
-      <li><span>LearnIT3D</span>Trade courses built on the apps</li>
-      <li><span>ThePyramids3D</span>How the pyramids were built</li>
-      <li><span>AnyPlanet3D</span>Planets you can explore</li>
-    </ul>
   </section>
 
+  <!-- AutoMotive3D -->
+  <section class="ch am" id="automotive3d" aria-labelledby="am-h">
+    <div class="wrap">
+      <div class="ch-head">
+        <div class="ch-copy">
+          <div class="ch-id"><img class="ico" src="assets/automotive3d-icon.webp" alt="" width="64" height="64"><span class="status">In closed testing</span></div>
+          <h2 class="wmh" id="am-h"><img src="assets/automotive3d-wordmark.webp" alt="AutoMotive3D" width="480" height="63"></h2>
+          <p class="tag">Build it. Dyno it. <span>Break it.</span></p>
+          <p class="pitch">Fourteen engines, from a small-block 350 to a 2JZ, or design your own. Build one, run it on the dyno, tear it down and watch what breaks first.</p>
+          <dl class="spec">
+            <div><dt>Subject</dt><dd>Engines</dd></div>
+            <div><dt>Engines</dt><dd>14, or your own</dd></div>
+            <div><dt>Get it</dt><dd>Closed testing now</dd></div>
+          </dl>
+          <div class="go">
+            <a class="p" href="https://groups.google.com/g/3d-family-testers" target="_blank" rel="noopener">Become a tester</a>
+            <a href="https://automotive3d.ca" target="_blank" rel="noopener">automotive3d.ca ↗</a>
+          </div>
+        </div>
+        <figure class="phone">
+          <div class="bez"><video data-auto muted loop playsinline preload="none" poster="media/am-promo.jpg" src="media/am-promo.mp4" aria-label="AutoMotive3D promo: build an engine, tear it down, fire it up in pieces"></video></div>
+          <figcaption>Build, tear down, fire it up in pieces</figcaption>
+        </figure>
+      </div>
+
+      <div class="cmp-wrap">
+        <span class="label">Straight from the app</span>
+        <h3>Drag to tear it down.</h3>
+        <p>Same engine, same camera. One frame assembled, one torn down, both rendered in AutoMotive3D.</p>
+        <div class="cmp" id="cmp">
+          <img class="a" src="media/am-cmp-a.webp" alt="A small-block V8 assembled in AutoMotive3D" loading="lazy">
+          <img class="b" src="media/am-cmp-b.webp" alt="The same V8 torn down into its parts" loading="lazy">
+          <div class="dock"><span>Assembled</span><input type="range" min="0" max="100" value="0" aria-label="Tear the engine down"><span>Torn down</span></div>
+        </div>
+      </div>
+
+      <div class="shots">
+        <figure><img src="media/am-build.webp" alt="Choosing an engine to build in AutoMotive3D" loading="lazy"><figcaption><b>Build.</b> Pick an engine or start your own, part by part, at real dimensions.</figcaption></figure>
+        <figure><img src="media/am-dyno.webp" alt="An engine running on the dyno in AutoMotive3D" loading="lazy"><figcaption><b>Dyno.</b> Fire it up and read torque, horsepower and rpm as it runs.</figcaption></figure>
+        <figure><img src="media/am-fuse.webp" alt="X-ray view of a running engine with a failing part in AutoMotive3D" loading="lazy"><figcaption><b>X-ray.</b> Watch it run from the inside and see which part is giving out.</figcaption></figure>
+        <figure><img src="media/am-arena.webp" alt="Two engines head to head in the AutoMotive3D arena" loading="lazy"><figcaption><b>Arena.</b> Put two builds head to head and see which one holds.</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="about">
+    <div class="wrap builder">
+      <div class="txt">
+        <span class="label">Who builds them</span>
+        <h2>Built by a tradesperson who wanted to know how it works.</h2>
+        <p>I'm Mitchell Lorin McKnight, a carpenter in Surrey, BC. In first-year electrical the circuit math was hard, and the teacher went fast. I went looking for a 3D circuit simulator to help me see it. Nobody had built one, so I built it.</p>
+        <p>Every app since has started the same way: something I wanted to see inside that nobody had made for ordinary people. If you can't get to it, can't afford it or can't safely take it apart, these apps let you do it in 3D.</p>
+      </div>
+      <div>
+        <dl class="facts">
+          <div><dt>Builder</dt><dd>Mitchell Lorin McKnight</dd></div>
+          <div><dt>Trade</dt><dd>Carpenter and framer, electrical apprenticeship</dd></div>
+          <div><dt>Home</dt><dd>Surrey, British Columbia</dd></div>
+          <div><dt>On Google Play</dt><dd class="bn">CircuiTry3D, ThePrints3D</dd></div>
+          <div><dt>Testing</dt><dd class="bn">AutoMotive3D</dd></div>
+        </dl>
+        <figure class="quote">
+          <blockquote>“Built by the same indie developer, Mitchell Lorin McKnight. He blends his background in trades (like carpentry and electrical work) with software engineering to build highly visual, interactive tools for trade workers, hobbyists, and learners.”</blockquote>
+          <figcaption>Google AI Mode, asked about CircuiTry3D and ThePrints3D, August 2026</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="work" style="padding-top:0">
+    <div class="wrap">
+      <div class="head">
+        <span class="label">Work with us</span>
+        <h2>Ways in.</h2>
+      </div>
+      <div class="ways">
+        <div class="way">
+          <h3>Manufacturers</h3>
+          <p class="bn">Put your real parts in front of the people who'll spec them. Components in CircuiTry3D's Component Arena, products on ThePrints3D's material lists, parts in the AutoMotive3D catalog.</p>
+          <a class="link" href="mailto:info@circuitry3d.app?subject=Product%20placement%20in%20the%203D%20apps">Talk placement</a>
+        </div>
+        <div class="way">
+          <h3>Schools and instructors</h3>
+          <p>License the apps for your classroom, shop or training program.</p>
+          <a class="link" href="mailto:info@circuitry3d.app?subject=Licensing%20the%203D%20apps">Ask about licensing</a>
+        </div>
+        <div class="way">
+          <h3>Testers</h3>
+          <p>Join the tester group and try new apps before they ship. Testers get every app in the family free, for life.</p>
+          <a class="link" href="https://groups.google.com/g/3d-family-testers" target="_blank" rel="noopener">Join the group</a>
+        </div>
+        <div class="way">
+          <h3>Support the build</h3>
+          <p>One person builds all of this. If an app helped you, buy the next one a coffee.</p>
+          <a class="link" href="https://ko-fi.com/mitchelllorin" target="_blank" rel="noopener">ko-fi.com/mitchelllorin</a>
+        </div>
+      </div>
+      <div class="contact" id="contact">
+        <span class="label">Email</span>
+        <code id="email">info@circuitry3d.app</code>
+        <button type="button" id="copy">Copy</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="block shop" id="next">
+    <div class="wrap">
+      <div class="head">
+        <span class="label">In the shop</span>
+        <h2>What's being built next.</h2>
+      </div>
+      <ul>
+        <li><b class="bn">TheAtom3D</b><span>Electron orbitals as the probability clouds they are, from hydrogen to iron.</span><a href="https://theatom3d.mitchelllorinmcknight.workers.dev/" target="_blank" rel="noopener">Free on the web ↗</a></li>
+        <li><b class="bn">TheCell3D</b><span>Fly through a living cell and go where you like.</span></li>
+        <li><b class="bn">AnyBody3D</b><span>The whole human body, outside in, all the way down to the cell.</span></li>
+        <li><b class="bn">AnyPlanet3D</b><span>Earth first, layer by layer down to the core.</span></li>
+        <li><b class="bn">LearnIT3D</b><span>Trade courses built on the apps, starting with electrical and HVAC.</span></li>
+        <li><b class="bn">ThePyramids3D</b><span>In early development.</span></li>
+      </ul>
+    </div>
+  </section>
 </main>
 
-<footer class="foot">
-  <div class="wrap foot-in">
-    <span>© 2026 Mitchell Lorin McKnight · F.U.S.E.™</span>
-    <a href="mailto:info@circuitry3d.app">info@circuitry3d.app</a>
+<footer>
+  <div class="wrap">
+    <span class="bn">© 2026 Mitchell Lorin McKnight · 3D Learning Family</span>
+    <span><a href="https://circuitry3d.app">circuitry3d.app</a> · <a href="https://theprints3d.com">theprints3d.com</a> · <a href="https://automotive3d.ca">automotive3d.ca</a></span>
   </div>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  'use strict';
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function play(v){if(reduce)return;var p=v.play();if(p&&p.catch)p.catch(function(){})}
+
+  // flat-top brand 3
+  var svg='<svg class="n3" viewBox="0 0 62 100" aria-hidden="true"><path d="M7 7H55L29 40C46 38 57 50 57 66C57 84 45 94 31 94C19 94 11 88 6 80"/></svg><span class="sr">3</span>';
+  document.querySelectorAll('.bn').forEach(function(el){
+    var w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,null),n,list=[];
+    while((n=w.nextNode())) if(n.nodeValue.indexOf('3')>-1) list.push(n);
+    list.forEach(function(t){
+      var f=document.createElement('span');
+      f.innerHTML=t.nodeValue.replace(/&/g,'&amp;').replace(/</g,'&lt;').split('3').join(svg);
+      t.parentNode.replaceChild(f,t);
+    });
+  });
+
+  // copy email
+  var cb=document.getElementById('copy');
+  cb.addEventListener('click',function(){
+    var v=document.getElementById('email').textContent;
+    var done=function(){cb.textContent='Copied';setTimeout(function(){cb.textContent='Copy'},1600)};
+    function sel(){var r=document.createRange();r.selectNodeContents(document.getElementById('email'));var s=getSelection();s.removeAllRanges();s.addRange(r);cb.textContent='Selected'}
+    try{navigator.clipboard.writeText(v).then(done,sel)}catch(e){sel()}
+  });
+
+  // videos play only while on screen
+  var vids=[].slice.call(document.querySelectorAll('video[data-auto]'));
+  if(reduce)vids.forEach(function(v){v.controls=true;v.preload='metadata'});
+  if('IntersectionObserver' in window){
+    var vio=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)play(e.target);else e.target.pause()})},{threshold:.35});
+    vids.forEach(function(v){vio.observe(v)});
+  }
+
+  // scroll-linked beats
+  [].slice.call(document.querySelectorAll('.story')).forEach(function(st){
+    var beats=[].slice.call(st.querySelectorAll('.beat')),layers=[].slice.call(st.querySelectorAll('.screen .m')),scr=st.querySelector('.screen'),cur=-1,inView=false;
+    function sync(){layers.forEach(function(m,j){if(m.tagName!=='VIDEO')return;if(j===cur&&inView&&scr.offsetParent!==null)play(m);else m.pause()})}
+    function set(i){if(i===cur)return;cur=i;beats.forEach(function(b,j){b.classList.toggle('on',j===i)});layers.forEach(function(m,j){m.classList.toggle('on',j===i)});sync()}
+    set(0);
+    if(!('IntersectionObserver' in window))return;
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)set(beats.indexOf(e.target))})},{rootMargin:'-45% 0px -45% 0px'});
+    beats.forEach(function(b){io.observe(b)});
+    new IntersectionObserver(function(es){inView=es[0].isIntersecting;sync()},{threshold:.2}).observe(scr);
+  });
+
+  // AutoMotive3D teardown slider
+  var cmp=document.getElementById('cmp');
+  if(cmp){
+    var cr=cmp.querySelector('input'),ca=cmp.querySelector('.a'),cbm=cmp.querySelector('.b');
+    var cup=function(){var v=cr.value/100,e=v*v*(3-2*v);cbm.style.opacity=e;ca.style.opacity=1-e;ca.style.transform='scale('+(1+.05*e)+')';cbm.style.transform='scale('+(.95+.05*e)+')'};
+    cr.addEventListener('input',cup);cup();
+  }
+
+  // ---------- hero: three models you can take apart ----------
+  var stage=document.getElementById('stage'),canvas=document.getElementById('gl'),slider=document.getElementById('explode');
+  var tabs=[].slice.call(document.querySelectorAll('.tabs button')),capApp=document.getElementById('capApp');
+  function nogl(){document.getElementById('nogl').hidden=false}
+  if(!window.THREE){nogl();return}
+  var renderer;
+  try{renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true})}catch(e){nogl();return}
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;
+
+  function col(h){return new THREE.Color(h).convertSRGBToLinear()}
+  var scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(32,1,.1,300);
+  camera.position.set(0,1.2,38);camera.lookAt(0,0,0);
+  scene.add(new THREE.HemisphereLight(col('#e8f0f6'),col('#3a2f26'),.9));
+  var key=new THREE.DirectionalLight(0xffffff,2.1);key.position.set(10,16,14);scene.add(key);
+  var fill=new THREE.DirectionalLight(col('#cfe0ff'),.6);fill.position.set(-14,4,10);scene.add(fill);
+  var rim=new THREE.DirectionalLight(0xffffff,.9);rim.position.set(-6,8,-16);scene.add(rim);
+  scene.fog=new THREE.Fog(col('#151d22'),30,64);
+
+  var root=new THREE.Group();scene.add(root);
+  var grid=new THREE.GridHelper(56,28,0xffffff,0xffffff);grid.position.y=-8.6;grid.material.transparent=true;grid.material.depthWrite=false;root.add(grid);
+  function theme(){var cs=getComputedStyle(document.documentElement),light=(cs.getPropertyValue('color-scheme')||'').trim()==='light';
+    scene.fog.color.copy(col(cs.getPropertyValue('--surface').trim()||'#151d22'));
+    var gc=col(light?'#9aa9b1':'#4a5d69');grid.geometry.attributes.color.array.forEach(function(_,i,a){a[i]=i%3===0?gc.r:i%3===1?gc.g:gc.b});grid.geometry.attributes.color.needsUpdate=true;grid.material.opacity=light?.45:.5}
+  theme();try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',theme)}catch(e){}
+
+  var EDGE=new THREE.LineBasicMaterial({color:col('#0b0f12'),transparent:true,opacity:.45});
+  var EDGE_L=new THREE.LineBasicMaterial({color:col('#dfe7ea'),transparent:true,opacity:.5});
+  function std(h,o){o=o||{};var m=new THREE.MeshStandardMaterial({color:col(h),roughness:o.r!=null?o.r:.7,metalness:o.m||0});
+    if(o.op!=null){m.transparent=true;m.opacity=o.op;m.depthWrite=false}return m}
+  function M(geo,mat,edge){var m=new THREE.Mesh(geo,mat);if(edge!==null)m.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo,28),edge||EDGE));return m}
+  function part(list,o,d){o.userData.b=o.position.clone();o.userData.d=new THREE.Vector3(d[0],d[1],d[2]);list.push(o);return o}
+  function curve(pts){return new THREE.CatmullRomCurve3(pts.map(function(p){return new THREE.Vector3(p[0],p[1],p[2])}),false,'catmullrom',.1)}
+  function cyl(r,h,mat,seg,edge){return M(new THREE.CylinderGeometry(r,r,h,seg||32),mat,edge)}
+
+  // --- CIRCUIT: battery, switch, resistor, LED; current runs while it's together
+  function buildCircuit(){
+    var g=new THREE.Group(),parts=[];g.position.y=-1.6;
+    var board=M(new THREE.BoxGeometry(13,.6,8.2),std('#163a68',{r:.55,m:.1}));g.add(board);part(parts,board,[0,-3.4,0]);
+    var dots=new THREE.Group();board.add(dots);
+    for(var ix=-6;ix<=6;ix++)for(var iz=-3;iz<=3;iz++){var d=new THREE.Mesh(new THREE.CircleGeometry(.06,8),new THREE.MeshBasicMaterial({color:col('#2c5b93')}));d.rotation.x=-Math.PI/2;d.position.set(ix,.305,iz*1.1);dots.add(d)}
+
+    var bat=new THREE.Group();bat.position.set(-3.4,1.2,-2.1);
+    var body=cyl(.9,3.4,std('#22262b',{r:.35,m:.25}),40);body.rotation.z=Math.PI/2;bat.add(body);
+    var band=cyl(.915,1.1,std('#f97316',{r:.35,m:.2}),40);band.rotation.z=Math.PI/2;band.position.x=1.1;bat.add(band);
+    var nub=cyl(.32,.26,std('#c3c9cf',{r:.25,m:.9}),24);nub.rotation.z=Math.PI/2;nub.position.x=1.83;bat.add(nub);
+    g.add(bat);part(parts,bat,[-.8,4.6,-.8]);
+
+    var sw=new THREE.Group();sw.position.set(3.6,.3,-2.1);
+    var sb=M(new THREE.BoxGeometry(1.9,.75,1.2),std('#2a2f34',{r:.5}));sb.position.y=.38;sw.add(sb);
+    var lev=M(new THREE.BoxGeometry(.22,1.1,.3),std('#c3c9cf',{r:.25,m:.9}));lev.position.set(.15,1.0,0);lev.rotation.z=-.45;sw.add(lev);
+    g.add(sw);part(parts,sw,[.8,4.6,-.8]);
+
+    var res=new THREE.Group();res.position.set(3.0,.85,2.1);
+    var rb=cyl(.33,1.9,std('#d9c49c',{r:.6}),32);rb.rotation.z=Math.PI/2;res.add(rb);
+    [['#7a4b25',-.55],['#111111',-.25],['#c0392b',.05],['#c9a227',.6]].forEach(function(b){var c=cyl(.345,.15,std(b[0],{r:.5,m:b[0]==='#c9a227'?.7:0}),32,null);c.rotation.z=Math.PI/2;c.position.x=b[1];res.add(c)});
+    res.add(new THREE.Mesh(new THREE.TubeGeometry(curve([[-1.5,-.5,0],[-1.3,0,0],[1.3,0,0],[1.5,-.5,0]]),24,.05,8,false),std('#b8bec4',{r:.3,m:.9})));
+    g.add(res);part(parts,res,[.8,6,.8]);
+
+    var ledMat=std('#ff3b2f',{r:.2,op:.9});ledMat.emissive=col('#ff2a1a');ledMat.emissiveIntensity=0;
+    var led=new THREE.Group();led.position.set(-2.6,.3,2.1);
+    var rim2=cyl(.52,.22,ledMat,32);rim2.position.y=.11;led.add(rim2);
+    var lb=cyl(.45,.75,ledMat,32);lb.position.y=.58;led.add(lb);
+    var dome=new THREE.Mesh(new THREE.SphereGeometry(.45,32,16,0,Math.PI*2,0,Math.PI/2),ledMat);dome.position.y=.95;led.add(dome);
+    var glow=new THREE.PointLight(col('#ff3a20'),0,7,2);glow.position.y=1.4;led.add(glow);
+    g.add(led);part(parts,led,[-.8,6,.8]);
+
+    var wires=[
+      [[[-1.45,1.2,-2.1],[-1.0,.55,-2.1],[-.4,.42,-2.1],[2.3,.42,-2.1],[2.65,.55,-2.1]],'#d93b2b'],
+      [[[4.55,.55,-2.1],[5.2,.42,-2.1],[5.7,.42,-1.3],[5.7,.42,1.4],[5.1,.42,2.1],[4.5,.38,2.1]],'#f2c230'],
+      [[[1.5,.38,2.1],[.8,.42,2.1],[-1.6,.42,2.1],[-2.12,.42,2.1]],'#eef2f4'],
+      [[[-3.08,.42,2.1],[-4.6,.42,2.1],[-5.9,.42,1.4],[-6.0,.42,-1.4],[-5.7,.7,-2.1],[-5.12,1.2,-2.1]],'#1d1f22']
+    ];
+    var flow=[],dotMat=new THREE.MeshBasicMaterial({color:col('#9fe3ff')});
+    wires.forEach(function(w){
+      var c=curve(w[0]),m=new THREE.Mesh(new THREE.TubeGeometry(c,80,.11,10,false),std(w[1],{r:.45}));g.add(m);part(parts,m,[0,2.3,0]);
+      var L=c.getLength(),n=Math.max(2,Math.round(L/1.4));
+      for(var k=0;k<n;k++){var s=new THREE.Mesh(new THREE.SphereGeometry(.13,12,8),dotMat);m.add(s);flow.push({s:s,c:c,o:k/n,sp:1.1/L})}
+    });
+    var t=0;
+    return {g:g,parts:parts,pitch:.62,yaw:-.35,app:'CircuiTry3D',href:'#circuitry3d',label:'A circuit with a battery, switch, resistor and LED. Take it apart to see each piece.',
+      update:function(e,dt){t+=dt;var on=Math.max(0,1-e/.14);
+        ledMat.emissiveIntensity=2.4*on;glow.intensity=2.2*on;
+        flow.forEach(function(f){f.s.visible=on>.05;if(on>.05)f.s.position.copy(f.c.getPointAt(Math.min(.995,(t*f.sp*(reduce?.2:1)+f.o)%1)))});}};
+  }
+
+  // --- FRAMING: a 64" wall section with a window opening, box and cable (built in inches)
+  function buildWall(){
+    var g=new THREE.Group(),inner=new THREE.Group(),parts=[],S=.16;g.add(inner);inner.scale.setScalar(S);inner.position.set(-32*S,-36*S-.4,0);
+    var wood=new THREE.Color('#e0a957');
+    function lum(x0,x1,y0,y1,d){var c=wood.clone().offsetHSL(0,(Math.random()-.5)*.04,(Math.random()-.5)*.07);
+      var m=M(new THREE.BoxGeometry(x1-x0,y1-y0,3.5),new THREE.MeshStandardMaterial({color:c.convertSRGBToLinear(),roughness:.85}));
+      m.position.set((x0+x1)/2,(y0+y1)/2,0);inner.add(m);return part(parts,m,d)}
+    lum(0,64,0,1.5,[0,-10,0]);                                  // bottom plate
+    lum(0,64,69,70.5,[0,14,0]);lum(0,64,70.5,72,[0,22,0]);      // double top plate
+    lum(0,1.5,1.5,69,[-12,0,0]);lum(62.5,64,1.5,69,[12,0,0]);   // end studs
+    lum(15.25,16.75,1.5,69,[-5,0,0]);lum(47.25,48.75,1.5,69,[5,0,0]); // king studs
+    lum(16.75,18.25,1.5,48,[-1.5,0,9]);lum(45.75,47.25,1.5,48,[1.5,0,9]); // jacks
+    lum(16.75,47.25,48,55.25,[0,7,13]);                         // header
+    lum(18.25,45.75,28.5,30,[0,-3,13]);                         // sill
+    [24,32,40].forEach(function(x){lum(x-.75,x+.75,55.25,69,[0,11,5]);lum(x-.75,x+.75,1.5,28.5,[0,-6,5])}); // cripples
+    function panel(z,depth,mat,d,holes){var s=new THREE.Shape();s.moveTo(0,0);s.lineTo(64,0);s.lineTo(64,72);s.lineTo(0,72);s.closePath();
+      holes.forEach(function(h){var p=new THREE.Path();p.moveTo(h[0],h[1]);p.lineTo(h[2],h[1]);p.lineTo(h[2],h[3]);p.lineTo(h[0],h[3]);p.closePath();s.holes.push(p)});
+      var m=M(new THREE.ExtrudeGeometry(s,{depth:depth,bevelEnabled:false}),mat);m.position.z=z;inner.add(m);return part(parts,m,d)}
+    var dry=std('#efeee9',{r:.95,op:.3});
+    panel(-1.75-.44,.44,std('#b8894f',{r:.95}),[0,0,-30],[[18.25,30,45.75,48]]);
+    panel(1.75,.5,dry,[0,0,30],[[18.25,30,45.75,48],[12.25,14,15.25,18]]);
+    var box=M(new THREE.BoxGeometry(3,4,3),std('#2f6fd6',{r:.45}));box.position.set(13.75,16,.25);inner.add(box);part(parts,box,[-5,0,17]);
+    var cable=new THREE.Mesh(new THREE.TubeGeometry(curve([[13.75,18,.2],[13.75,22,.2],[12.6,24,.2],[6,24,.2],[-5,24,.2]]),48,.32,10,false),std('#f0c63c',{r:.55}));
+    inner.add(cable);part(parts,cable,[-3,0,10]);
+    return {g:g,parts:parts,pitch:.1,yaw:-.5,app:'ThePrints3D',href:'#theprints3d',label:'A framed wall with a window opening, header, sill, cripples, sheathing, drywall and an electrical box. Take it apart to see each piece.',
+      update:function(e){dry.opacity=.3-.2*e}};
+  }
+
+  // --- ENGINE: an inline four that keeps running while you take it apart
+  function buildEngine(){
+    var g=new THREE.Group(),parts=[];g.position.y=-2.1;
+    var xs=[-3.6,-1.2,1.2,3.6],ph=[0,Math.PI,Math.PI,0],R=.9,L=3.1;
+    var alu=std('#c6ccd2',{r:.3,m:.8}),steel=std('#9da6ae',{r:.35,m:.85}),dark=std('#2a2f34',{r:.6,m:.3});
+    var block=M(new THREE.BoxGeometry(10.6,6.2,3.6),std('#8d99a2',{r:.4,m:.4,op:.18}),EDGE_L);block.position.y=2;g.add(block);part(parts,block,[0,0,0]);
+    xs.forEach(function(x){var l=M(new THREE.CylinderGeometry(1.02,1.02,4.2,40,1,true),std('#8d99a2',{r:.4,m:.4,op:.1}),EDGE_L);l.position.set(x,1.1,0);block.add(l)});
+    var head=M(new THREE.BoxGeometry(10.6,1.3,3.6),std('#7a858e',{r:.45,m:.55}));head.position.y=5.75;g.add(head);part(parts,head,[0,3,0]);
+    var cover=M(new THREE.BoxGeometry(10.1,.9,3.0),std('#e2452b',{r:.35,m:.25}));cover.position.y=6.85;g.add(cover);part(parts,cover,[0,5.4,0]);
+    xs.forEach(function(x){var c=cyl(.2,.7,dark,16);c.position.set(x,.6,.85);cover.add(c)});
+    var pan=M(new THREE.BoxGeometry(10.2,1.5,3.2),dark);pan.position.y=-1.85;g.add(pan);part(parts,pan,[0,-3.6,0]);
+    var crank=new THREE.Group();g.add(crank);part(parts,crank,[0,-1.8,0]);
+    var cr=new THREE.Group();crank.add(cr);
+    var shaft=cyl(.38,12.4,steel,24);shaft.rotation.z=Math.PI/2;cr.add(shaft);
+    xs.forEach(function(x,i){var f=ph[i];
+      var pin=cyl(.32,.9,steel,24);pin.rotation.z=Math.PI/2;pin.position.set(x,R*Math.cos(f),R*Math.sin(f));cr.add(pin);
+      [-.58,.58].forEach(function(o){var w=M(new THREE.BoxGeometry(.26,R+1.0,1.15),steel);w.position.set(x+o,(R/2)*Math.cos(f),(R/2)*Math.sin(f));w.rotation.x=f;cr.add(w)});
+    });
+    var fw=cyl(2.1,.45,dark,48);fw.rotation.z=Math.PI/2;fw.position.x=5.95;cr.add(fw);
+    for(var k=0;k<6;k++){var a=k*Math.PI/3,bt=M(new THREE.BoxGeometry(.2,.32,.32),steel);bt.position.set(6.22,1.4*Math.cos(a),1.4*Math.sin(a));cr.add(bt)}
+    var pul=cyl(.95,.55,dark,40);pul.rotation.z=Math.PI/2;pul.position.x=-6.05;cr.add(pul);
+    var pist=[],rods=[];
+    xs.forEach(function(x){var p=new THREE.Group();p.add(cyl(.95,1.3,alu,40));[.28,.46].forEach(function(y){var rg=cyl(.965,.07,dark,40,null);rg.position.y=y;p.add(rg)});g.add(p);pist.push(p);
+      var r=M(new THREE.BoxGeometry(.32,L,.5),steel);g.add(r);rods.push(r)});
+    var th=0;
+    return {g:g,parts:parts,pitch:.28,yaw:-.6,app:'AutoMotive3D',href:'#automotive3d',label:'An inline-four engine running, with block, head, valve cover, pistons, rods, crankshaft and oil pan. Take it apart to see each piece.',
+      update:function(e,dt){th+=dt*(reduce?.5:4.6);cr.rotation.x=th;
+        xs.forEach(function(x,i){var a=ph[i]+th,py=R*Math.cos(a),pz=R*Math.sin(a),wy=py+Math.sqrt(L*L-pz*pz);
+          pist[i].position.set(x,wy+.25+e*2.1,0);
+          rods[i].position.set(x,(py+wy)/2+e*.9,pz/2);rods[i].rotation.x=Math.atan2(-pz,wy-py);});}};
+  }
+
+  var models=[buildCircuit(),buildWall(),buildEngine()];
+  models.forEach(function(m){root.add(m.g)});
+
+  function size(){var w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;
+    camera.position.z=w/h<.9?52:w/h<1.2?44:38;camera.updateProjectionMatrix()}
+  if('ResizeObserver' in window)new ResizeObserver(size).observe(stage);else addEventListener('resize',size);
+  size();
+
+  var cur=0,t=reduce?.6:0,manual=reduce,yaw=0,pitch=0,dragging=false,lx=0,ly=0,lastTouch=0,cycle0=performance.now(),visible=true,last=performance.now();
+  function show(i){cur=i;models.forEach(function(m,j){m.g.visible=j===i});
+    tabs.forEach(function(b,j){b.setAttribute('aria-pressed',j===i?'true':'false')});
+    var m=models[i];canvas.setAttribute('aria-label',m.label+' Drag to turn it.');
+    capApp.innerHTML='This one\'s from <a href="'+m.href+'">'+m.app.replace('3','<svg class="n3" viewBox="0 0 62 100" aria-hidden="true"><path d="M7 7H55L29 40C46 38 57 50 57 66C57 84 45 94 31 94C19 94 11 88 6 80"/></svg><span class="sr">3</span>')+'</a>';}
+  show(0);if(reduce)slider.value=60;
+  tabs.forEach(function(b,j){b.addEventListener('click',function(){manual=true;t=slider.value/100;show(j)})});
+  slider.addEventListener('input',function(){manual=true;t=slider.value/100});
+  canvas.addEventListener('pointerdown',function(e){dragging=true;lx=e.clientX;ly=e.clientY;lastTouch=performance.now();canvas.setPointerCapture(e.pointerId)});
+  canvas.addEventListener('pointermove',function(e){if(!dragging)return;yaw+=(e.clientX-lx)*.008;pitch=Math.max(-.5,Math.min(.6,pitch+(e.clientY-ly)*.005));lx=e.clientX;ly=e.clientY;lastTouch=performance.now()});
+  function up(){dragging=false}
+  canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
+  if('IntersectionObserver' in window)new IntersectionObserver(function(es){visible=es[0].isIntersecting},{threshold:.05}).observe(stage);
+
+  function apply(m,e){m.parts.forEach(function(p){p.position.copy(p.userData.b).addScaledVector(p.userData.d,e)})}
+  function loop(now){
+    requestAnimationFrame(loop);
+    var dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;
+    if(!visible||document.hidden)return;
+    if(!manual){var s=(now-cycle0)/1000;if(s>9.5){cycle0=now;s=0;show((cur+1)%models.length)}
+      var k=s<1.4?0:s<4.4?(s-1.4)/3:s<6.6?1:s<8.8?1-(s-6.6)/2.2:0;t=k*.9;slider.value=Math.round(t*100)}
+    if(!reduce&&!dragging&&now-lastTouch>2500)yaw+=dt*.16;
+    var m=models[cur],e=t*t*(3-2*t);
+    root.rotation.set(m.pitch+pitch,m.yaw+yaw,0);
+    apply(m,e);m.update(e,dt);
+    renderer.render(scene,camera);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
 </body>
 </html>
