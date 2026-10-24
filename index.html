@@ -3,31 +3,29 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>The 3D Learning Family — take it apart, see how it works</title>
-<meta name="description" content="3D apps for circuits, buildings, engines and the body. Build it, explode it, break it on purpose, and learn how it works. Built by a carpenter and electrical apprentice in Surrey, BC.">
-<meta name="theme-color" content="#070F26">
+<title>The 3D Learning Family</title>
+<meta name="description" content="3D apps for circuits, buildings and engines. Build the system, take it apart, and see what happens under load.">
+<meta name="theme-color" content="#0b1120">
 <meta property="og:title" content="The 3D Learning Family">
-<meta property="og:description" content="3D apps you take apart to learn how things work: circuits, buildings, engines, the body.">
+<meta property="og:description" content="Making the invisible visible. 3D apps for circuits, buildings and engines.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="assets/family-wordmarks.webp">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,600;0,700;1,700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header class="top">
-  <div class="wrap top-in">
+<header class="bar">
+  <div class="wrap bar-in">
     <a class="brand" href="#top" aria-label="The 3D Learning Family, home">
-      <span class="b1">The</span> <span class="b3">3D</span> <span class="b1">Learning</span> <span class="b2">Family</span>
+      <span class="c-blue">The</span><span class="c-green">3D</span><span class="c-blue">Learning</span><span class="c-orange">Family</span>
     </a>
     <nav aria-label="Sections">
       <a href="#apps">Apps</a>
       <a href="#fuse">F.U.S.E.</a>
-      <a href="#story">Story</a>
-      <a href="#work">Work with us</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
     </nav>
   </div>
 </header>
@@ -35,120 +33,141 @@
 <main id="top">
 
   <section class="hero wrap">
-    <div class="hero-copy">
-      <p class="eyebrow">One family of 3D apps</p>
-      <h1>Take it apart.<br><span class="hl">See how it works.</span></h1>
-      <p class="lede">Circuits, buildings, engines, the human body. Build it in 3D, explode it, push it until something fails, and see exactly why it did.</p>
-      <div class="cta">
-        <a class="btn" href="#apps">See the apps</a>
-        <a class="btn ghost" href="#work">For schools and makers</a>
-      </div>
+    <p class="label">The 3D Learning Family</p>
+    <h1>Making the invisible visible.</h1>
+    <p class="lede">Current in a wire, load in a wall, force in an engine. These things are hard to picture from a textbook. Our apps put them in 3D, where you can build them, take them apart and watch what happens when they're pushed too far.</p>
+    <div class="actions">
+      <a class="btn btn-solid" href="#apps">View the apps</a>
+      <a class="btn btn-line" href="#contact">Schools and partners</a>
     </div>
-    <div class="hero-art">
-      <img src="assets/family-wordmarks.webp" width="418" height="668" alt="The family: CircuiTry3D, ThePrints3D, AutoMotive3D, AnyBody3D, TheCell3D, ThePyramids3D, AnyPlanet3D, LearnIT3D">
-    </div>
+
+    <dl class="facts">
+      <div><dt>Apps</dt><dd>3</dd></div>
+      <div><dt>On Google Play</dt><dd>2</dd></div>
+      <div><dt>Closed testing</dt><dd>1</dd></div>
+      <div><dt>Built in</dt><dd>Surrey, BC</dd></div>
+    </dl>
   </section>
 
-  <section id="apps" class="wrap section">
-    <h2>The apps</h2>
-    <p class="sub">Same controls, same look, same engine underneath. Learn one and you already know the others.</p>
+  <section id="apps" class="wrap block">
+    <div class="block-head">
+      <span class="num">01</span>
+      <h2>The apps</h2>
+      <p>One set of controls across all three. Learn one and you can find your way around the others.</p>
+    </div>
 
-    <div class="apps">
-      <a class="app" href="https://circuitry3d.app/">
-        <img class="icon" src="assets/circuitry3d-icon.webp" width="80" height="80" alt="">
-        <div class="body">
-          <img class="wm" src="assets/circuitry3d-wordmark.webp" width="480" height="89" alt="CircuiTry3D">
-          <span class="pill live">On Google Play</span>
-          <p>Build a circuit in 3D, watch the current move through it, and push parts until they fail.</p>
-          <span class="go">circuitry3d.app →</span>
+    <ol class="apps">
+      <li class="app">
+        <img class="app-icon" src="assets/circuitry3d-icon.webp" width="72" height="72" alt="">
+        <div class="app-main">
+          <img class="app-wm" src="assets/circuitry3d-wordmark.webp" width="480" height="89" alt="CircuiTry3D">
+          <p>Build electrical circuits in 3D and follow the current through every component. Overload a part and see why it fails.</p>
         </div>
-      </a>
+        <dl class="app-spec">
+          <div><dt>Subject</dt><dd>Electrical</dd></div>
+          <div><dt>Status</dt><dd class="s-live">Google Play</dd></div>
+        </dl>
+        <a class="app-link" href="https://circuitry3d.app/">circuitry3d.app</a>
+      </li>
 
-      <a class="app" href="https://theprints3d.com/">
-        <img class="icon" src="assets/theprints3d-icon.webp" width="80" height="80" alt="">
-        <div class="body">
-          <img class="wm" src="assets/theprints3d-wordmark.webp" width="480" height="71" alt="ThePrints3D">
-          <span class="pill live">On Google Play</span>
-          <p>Turn a floor plan into a framed building you can walk around, explode and measure.</p>
-          <span class="go">theprints3d.com →</span>
+      <li class="app">
+        <img class="app-icon" src="assets/theprints3d-icon.webp" width="72" height="72" alt="">
+        <div class="app-main">
+          <img class="app-wm" src="assets/theprints3d-wordmark.webp" width="480" height="71" alt="ThePrints3D">
+          <p>Turn a floor plan into a framed 3D structure. Walk through it, separate the layers and review it member by member.</p>
         </div>
-      </a>
+        <dl class="app-spec">
+          <div><dt>Subject</dt><dd>Framing</dd></div>
+          <div><dt>Status</dt><dd class="s-live">Google Play</dd></div>
+        </dl>
+        <a class="app-link" href="https://theprints3d.com/">theprints3d.com</a>
+      </li>
 
-      <a class="app" href="https://automotive3d.ca/">
-        <img class="icon" src="assets/automotive3d-icon.webp" width="80" height="80" alt="">
-        <div class="body">
-          <img class="wm" src="assets/automotive3d-wordmark.webp" width="480" height="63" alt="AutoMotive3D">
-          <span class="pill test">In testing</span>
-          <p>Build an engine part by part, run it on the dyno, tear it down and see what let go.</p>
-          <span class="go">automotive3d.ca →</span>
+      <li class="app">
+        <img class="app-icon" src="assets/automotive3d-icon.webp" width="72" height="72" alt="">
+        <div class="app-main">
+          <img class="app-wm" src="assets/automotive3d-wordmark.webp" width="480" height="63" alt="AutoMotive3D">
+          <p>Assemble an engine part by part, run it on the dyno, then tear it down to find what gave out.</p>
         </div>
-      </a>
-    </div>
+        <dl class="app-spec">
+          <div><dt>Subject</dt><dd>Automotive</dd></div>
+          <div><dt>Status</dt><dd class="s-test">Closed testing</dd></div>
+        </dl>
+        <a class="app-link" href="https://automotive3d.ca/">automotive3d.ca</a>
+      </li>
+    </ol>
+  </section>
 
-    <h3 class="workshop-h">In the workshop</h3>
-    <div class="workshop">
-      <div class="ws">
-        <img src="assets/thepyramids3d-wordmark.webp" width="480" height="70" alt="ThePyramids3D">
-      </div>
-      <div class="ws">
-        <img src="assets/anyplanet3d-wordmark.webp" width="480" height="80" alt="AnyPlanet3D">
-      </div>
-      <div class="ws">
-        <img src="assets/learnit3d-wordmark.webp" width="480" height="80" alt="LearnIT3D">
-        <p>Courses built on CircuiTry3D: Electrical Foundations and HVAC Apprentice Prep.</p>
+  <section id="fuse" class="wrap block">
+    <div class="block-head">
+      <span class="num">02</span>
+      <h2>F.U.S.E.<sup>™</sup></h2>
+      <p>Failure Understanding Simulation Engine</p>
+    </div>
+    <div class="cols">
+      <p>Knowing that a part fails is useful. Knowing why it failed is what sticks. F.U.S.E. works from real component specifications, so when a fuse opens, a joist deflects or a bearing seizes, the cause is shown, not just the result.</p>
+      <p>It was first built for CircuiTry3D to show what a fuse actually does. It now runs underneath every app in the family.</p>
+    </div>
+  </section>
+
+  <section id="about" class="wrap block">
+    <div class="block-head">
+      <span class="num">03</span>
+      <h2>About</h2>
+    </div>
+    <div class="cols">
+      <p class="pull">Built by a tradesperson, for the people learning the trade.</p>
+      <div>
+        <p>Mitchell Lorin McKnight is a carpenter and electrical apprentice based in Surrey, British Columbia. In his first year of electrical school he struggled to picture what the circuit theory described. He wanted something he could turn over and look at from every side. He couldn't find one, so he built it.</p>
+        <p>CircuiTry3D launched on Google Play in March 2026. ThePrints3D applied the same approach to framing, and AutoMotive3D to engines.</p>
       </div>
     </div>
   </section>
 
-  <section id="fuse" class="wrap section fuse">
-    <div>
-      <p class="eyebrow">The engine underneath</p>
-      <h2>F.U.S.E.™</h2>
-      <p class="big">Failure Understanding Simulation Engine.</p>
+  <section id="contact" class="wrap block">
+    <div class="block-head">
+      <span class="num">04</span>
+      <h2>Work with us</h2>
     </div>
-    <div>
-      <p>Every app in the family runs on the same idea: you learn how something works by watching it fail. F.U.S.E. models the load, the heat and the limit from real specs, so when a fuse blows, a joist sags or a bearing spins, you see the reason, not just the result.</p>
-      <p>It started in CircuiTry3D as a way to show what a fuse actually does. Now it runs under all of them.</p>
-    </div>
-  </section>
-
-  <section id="story" class="wrap section story">
-    <p class="quote">A framer who went looking for a 3D circuit simulator, found none, and built one.</p>
-    <div>
-      <p>Mitchell Lorin McKnight is a carpenter and electrical apprentice in Surrey, BC. In first year, the circuit math didn't land. He wanted to watch the current move through something he could turn over and look at from any side. Nothing like that existed, so he built it.</p>
-      <p>CircuiTry3D went live on Google Play in March 2026. The same approach went into framing, then engines, and it keeps going.</p>
-    </div>
-  </section>
-
-  <section id="work" class="wrap section">
-    <h2>Work with us</h2>
-    <div class="work">
-      <a class="tile" href="mailto:info@circuitry3d.app?subject=3D%20Learning%20Family%20for%20our%20school">
+    <ul class="rows">
+      <li>
         <h3>Schools and instructors</h3>
-        <p>Run the apps with a live class before you commit to anything. Licensing for programs and departments.</p>
-        <span class="go">Email us →</span>
-      </a>
-      <a class="tile" href="mailto:info@circuitry3d.app?subject=Putting%20our%20parts%20in%20the%203D%20apps">
+        <p>Trial the apps with a class before committing. Licensing is available for programs and departments.</p>
+        <a href="mailto:info@circuitry3d.app?subject=3D%20Learning%20Family%20for%20our%20program">Get in touch</a>
+      </li>
+      <li>
         <h3>Manufacturers</h3>
-        <p>Put your real parts in front of the apprentices and students who will be choosing them in a few years.</p>
-        <span class="go">Email us →</span>
-      </a>
-      <a class="tile" href="mailto:info@circuitry3d.app?subject=I%20want%20to%20test%20the%203D%20apps">
+        <p>Put accurate models of your components in front of the apprentices and students who will be specifying them.</p>
+        <a href="mailto:info@circuitry3d.app?subject=Our%20components%20in%20the%203D%20apps">Get in touch</a>
+      </li>
+      <li>
         <h3>Testers</h3>
-        <p>Have an Android phone and want to try the new ones first? Tell us which app, and we'll send the steps.</p>
-        <span class="go">Email us →</span>
-      </a>
+        <p>Android users can join closed testing for new releases. Tell us which app and we'll send the steps.</p>
+        <a href="mailto:info@circuitry3d.app?subject=Testing%20the%203D%20apps">Get in touch</a>
+      </li>
+    </ul>
+  </section>
+
+  <section class="wrap block dev">
+    <div class="block-head">
+      <span class="num">05</span>
+      <h2>In development</h2>
     </div>
+    <ul class="dev-list">
+      <li><span>AnyBody3D</span>The human body and its systems</li>
+      <li><span>TheCell3D</span>A living cell, organelle by organelle</li>
+      <li><span>LearnIT3D</span>Trade courses built on the apps</li>
+      <li><span>ThePyramids3D</span>How the pyramids were built</li>
+      <li><span>AnyPlanet3D</span>Planets you can explore</li>
+    </ul>
   </section>
 
 </main>
 
 <footer class="foot">
-  <div class="wrap">
-    <div class="family">The 3D family:<br>
-      <a href="https://circuitry3d.app">CircuiTry3D</a><a href="https://theprints3d.com">ThePrints3D</a><a href="https://automotive3d.ca">AutoMotive3D</a><a href="https://anybody3d.com">AnyBody3D</a><a href="https://thecell3d.com">TheCell3D</a><span>ThePyramids3D</span><span>AnyPlanet3D</span><span>LearnIT3D</span>
-    </div>
-    <p class="fine">Built by Mitchell Lorin McKnight · <a href="mailto:info@circuitry3d.app">info@circuitry3d.app</a><br>F.U.S.E.™ © Mitchell Lorin.</p>
+  <div class="wrap foot-in">
+    <span>© 2026 Mitchell Lorin McKnight · F.U.S.E.™</span>
+    <a href="mailto:info@circuitry3d.app">info@circuitry3d.app</a>
   </div>
 </footer>
 
