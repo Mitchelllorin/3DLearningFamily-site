@@ -112,7 +112,12 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 @media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .plate{text-shadow:0 1px 2px rgba(255,255,255,.95),0 0 10px rgba(255,255,255,.9)}:root:not([data-theme="dark"]) .np-fig{color:var(--fg)}}
 :root[data-theme="light"] .plate{text-shadow:0 1px 2px rgba(255,255,255,.95),0 0 10px rgba(255,255,255,.9)}
 :root[data-theme="light"] .np-fig{color:var(--fg)}
-.isochip{grid-area:view;align-self:start;justify-self:start;position:relative;z-index:10;margin:10px;display:flex;align-items:center;gap:8px;padding:4px 4px 4px 12px;border-radius:12px;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);font-size:.85rem;max-width:calc(100% - 20px)}
+.isochip{grid-area:view;align-self:start;justify-self:start;position:relative;z-index:10;margin:10px;display:flex;align-items:center;gap:8px;padding:4px 4px 4px 12px;border-radius:12px;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);font-size:.85rem;max-width:calc(100% - 80px)}
+.xbtn{grid-area:view;justify-self:end;align-self:start;position:relative;z-index:10;margin:10px;width:48px;height:48px;padding:0;border-radius:12px;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);color:var(--fg);display:grid;place-items:center;cursor:pointer}
+.xbtn:hover{border-color:var(--accent)}
+.stage.full{position:fixed;inset:0;z-index:30;height:100vh;height:100dvh;border-radius:0;border:0;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+.stage.full canvas{touch-action:none}
+body.lock{overflow:hidden}
 .isochip[hidden]{display:none}
 .isochip span{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .isochip b{color:var(--fg);font-weight:600}
@@ -289,6 +294,7 @@ footer a:hover{color:var(--fg)}
         <div class="stage" id="stage">
           <canvas id="gl" aria-label="A 3D model you can turn and take apart."></canvas>
           <p class="nogl" id="nogl" hidden>The 3D model needs WebGL, which this browser has turned off.</p>
+          <button type="button" class="xbtn" id="xbtn" aria-pressed="false" aria-label="Expand the 3D view"></button>
           <div class="isochip" id="isochip" hidden><span>Isolated: <b id="isoName"></b></span><button type="button" id="showAll">Show all</button></div>
           <div class="plate" id="plate" hidden aria-live="polite"><span class="np-name" id="npName"></span><span class="np-fig" id="npFig"></span></div>
           <div class="dock">
@@ -303,7 +309,7 @@ footer a:hover{color:var(--fg)}
             </div>
           </div>
         </div>
-        <figcaption class="cap"><span>Drag to turn it. Tap a part for its name, double-tap to isolate it.</span><span id="capApp">This one's from <a href="#circuitry3d" class="bn">CircuiTry3D</a></span></figcaption>
+        <figcaption class="cap"><span>Drag to turn, scroll or pinch to zoom, right-drag or two fingers to pan. Tap a part for its name, double-tap to isolate it.</span><span id="capApp">This one's from <a href="#circuitry3d" class="bn">CircuiTry3D</a></span></figcaption>
       </figure>
     </section>
   </div>
@@ -626,7 +632,8 @@ footer a:hover{color:var(--fg)}
   scene.fog=new THREE.Fog(col('#151d22'),30,64);
 
   var root=new THREE.Group();scene.add(root);
-  var grid=new THREE.GridHelper(56,28,0xffffff,0xffffff);grid.position.y=-8.6;grid.material.transparent=true;grid.material.depthWrite=false;root.add(grid);
+  var pivot=new THREE.Group();root.add(pivot);
+  var grid=new THREE.GridHelper(56,28,0xffffff,0xffffff);grid.position.y=-8.6;grid.material.transparent=true;grid.material.depthWrite=false;pivot.add(grid);
   function theme(){var cs=getComputedStyle(document.documentElement),light=(cs.getPropertyValue('color-scheme')||'').trim()==='light';
     scene.fog.color.copy(col(cs.getPropertyValue('--surface').trim()||'#151d22'));
     var gc=col(light?'#9aa9b1':'#4a5d69');grid.geometry.attributes.color.array.forEach(function(_,i,a){a[i]=i%3===0?gc.r:i%3===1?gc.g:gc.b});grid.geometry.attributes.color.needsUpdate=true;grid.material.opacity=light?.45:.5}
@@ -756,7 +763,7 @@ footer a:hover{color:var(--fg)}
   }
 
   var models=[buildCircuit(),buildWall(),buildEngine()];
-  models.forEach(function(m){root.add(m.g)});
+  models.forEach(function(m){pivot.add(m.g)});
 
   // ---- nameplates and isolate, the same way the apps do it:
   // tap = nameplate, double-tap = isolate (the rest drops to a faint outline),
@@ -770,6 +777,10 @@ footer a:hover{color:var(--fg)}
     })(m.g,null);
   }
   models.forEach(prepare);
+  var P=new THREE.Vector3(),Pt=new THREE.Vector3(),zoom=1,zoomT=1,pan=new THREE.Vector2(),panT=new THREE.Vector2(),baseZ=38,box3=new THREE.Box3(),wc=new THREE.Vector3(),full=false;
+  function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+  function resetView(){yaw=0;pitch=0;zoomT=1;panT.set(0,0);Pt.set(0,0,0)}
+  function camScale(){return 2*baseZ*zoom*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))/Math.max(1,canvas.clientHeight)}
   var iso=null,isoHide=false,sel=null,hov=null,plateT1=0,plateT2=0;
   var plate=document.getElementById('plate'),npName=document.getElementById('npName'),npFig=document.getElementById('npFig');
   var isochip=document.getElementById('isochip'),isoName=document.getElementById('isoName');
@@ -802,8 +813,8 @@ footer a:hover{color:var(--fg)}
     plate.classList.remove('leaving');plate.hidden=false;plate.style.animation='none';void plate.offsetWidth;plate.style.animation='';
     if(iso!==p)plateT1=setTimeout(function(){showPlate(null)},2600);
   }
-  function isolate(p,hide){iso=p;isoHide=hide;sel=p;showPlate(p);isochip.hidden=false;isoName.textContent=p.o.userData.np.n+(hide?' only':'')}
-  function unisolate(){var had=iso;iso=null;isoHide=false;isochip.hidden=true;if(had)showPlate(had)}
+  function isolate(p,hide){iso=p;isoHide=hide;sel=p;showPlate(p);box3.setFromObject(p.o);zoomT=clamp(box3.getSize(wc).length()/15,.3,1);panT.set(0,0);isochip.hidden=false;isoName.textContent=p.o.userData.np.n+(hide?' only':'')}
+  function unisolate(){var had=iso;iso=null;isoHide=false;isochip.hidden=true;if(had){showPlate(had);zoomT=1;panT.set(0,0)}Pt.set(0,0,0)}
   function resetPick(){iso=null;isoHide=false;sel=null;hov=null;isochip.hidden=true;clearTimeout(plateT1);clearTimeout(plateT2);plate.hidden=true;plate.classList.remove('leaving')}
   document.getElementById('showAll').addEventListener('click',unisolate);
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&iso)unisolate()});
@@ -814,35 +825,70 @@ footer a:hover{color:var(--fg)}
     tapSeq.id=id;tapSeq.t=now;
     if(p){manual=true;slider.value=Math.round(t*100);
       if(tapSeq.n===1){sel=p;showPlate(p)}else if(tapSeq.n===2)isolate(p,false);else isolate(p,true)}
-    else if(tapSeq.n>=2){unisolate();sel=null;showPlate(null)}
+    else if(tapSeq.n>=2){unisolate();sel=null;showPlate(null);resetView()}
     else if(!iso){sel=null;showPlate(null)}
   }
 
   function size(){var w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;
-    camera.position.z=w/h<.9?52:w/h<1.2?44:38;camera.updateProjectionMatrix()}
+    baseZ=w/h<.9?52:w/h<1.2?44:38;camera.updateProjectionMatrix()}
   if('ResizeObserver' in window)new ResizeObserver(size).observe(stage);else addEventListener('resize',size);
   size();
 
   var cur=0,t=reduce?.6:0,manual=reduce,yaw=0,pitch=0,dragging=false,lx=0,ly=0,lastTouch=0,cycle0=performance.now(),visible=true,last=performance.now();
-  function show(i){cur=i;resetPick();models.forEach(function(m,j){m.g.visible=j===i});fade(models[i],0,true);
+  function show(i){cur=i;resetPick();resetView();models.forEach(function(m,j){m.g.visible=j===i});fade(models[i],0,true);
     tabs.forEach(function(b,j){b.setAttribute('aria-pressed',j===i?'true':'false')});
     var m=models[i];canvas.setAttribute('aria-label',m.label+' Drag to turn it.');
     capApp.innerHTML='This one\'s from <a href="'+m.href+'">'+m.app.replace('3','<svg class="n3" viewBox="0 0 62 100" aria-hidden="true"><path d="M7 7H55L29 40C46 38 57 50 57 66C57 84 45 94 31 94C19 94 11 88 6 80"/></svg><span class="sr">3</span>')+'</a>';}
   show(0);if(reduce)slider.value=60;
   tabs.forEach(function(b,j){b.addEventListener('click',function(){manual=true;t=slider.value/100;show(j)})});
   slider.addEventListener('input',function(){manual=true;t=slider.value/100});
-  var down=null,hoverAt=0;
-  canvas.addEventListener('pointerdown',function(e){dragging=true;lx=e.clientX;ly=e.clientY;down={x:e.clientX,y:e.clientY,t:performance.now()};lastTouch=performance.now();canvas.setPointerCapture(e.pointerId)});
+  var ptrs={},down=null,hoverAt=0,pinch=null,engaged=false;
+  function cnt(){return Object.keys(ptrs).length}
+  canvas.addEventListener('contextmenu',function(e){e.preventDefault()});
+  canvas.addEventListener('pointerdown',function(e){
+    ptrs[e.pointerId]={x:e.clientX,y:e.clientY};engaged=true;lastTouch=performance.now();
+    try{canvas.setPointerCapture(e.pointerId)}catch(_){}
+    if(cnt()===1){dragging=true;lx=e.clientX;ly=e.clientY;down={x:e.clientX,y:e.clientY,t:performance.now(),pan:e.button===2||e.button===1||e.shiftKey}}
+    else{down=null;var k=Object.keys(ptrs),a=ptrs[k[0]],b=ptrs[k[1]];pinch={d:Math.hypot(a.x-b.x,a.y-b.y),mx:(a.x+b.x)/2,my:(a.y+b.y)/2}}
+  });
   canvas.addEventListener('pointermove',function(e){
-    if(!dragging){
-      if(e.pointerType==='mouse'){var n=performance.now();if(n-hoverAt>60){hoverAt=n;var p=pickAt(e.clientX,e.clientY);canvas.style.cursor=p?'pointer':'';if(p!==hov){hov=p;if(p)showPlate(p)}}}
+    if(!ptrs[e.pointerId]){
+      if(e.pointerType==='mouse'){var n=performance.now();if(n-hoverAt>60){hoverAt=n;var hp=pickAt(e.clientX,e.clientY);canvas.style.cursor=hp?'pointer':'';if(hp!==hov){hov=hp;if(hp)showPlate(hp)}}}
       return}
-    yaw+=(e.clientX-lx)*.008;pitch=Math.max(-.5,Math.min(.6,pitch+(e.clientY-ly)*.005));lx=e.clientX;ly=e.clientY;lastTouch=performance.now()});
-  canvas.addEventListener('pointerup',function(e){dragging=false;
-    if(down&&Math.hypot(e.clientX-down.x,e.clientY-down.y)<8&&performance.now()-down.t<400)tap(e.clientX,e.clientY);
-    down=null});
-  canvas.addEventListener('pointercancel',function(){dragging=false;down=null});
+    ptrs[e.pointerId]={x:e.clientX,y:e.clientY};lastTouch=performance.now();
+    if(cnt()>=2&&pinch){var k=Object.keys(ptrs),a=ptrs[k[0]],b=ptrs[k[1]],d=Math.hypot(a.x-b.x,a.y-b.y),mx=(a.x+b.x)/2,my=(a.y+b.y)/2,sc=camScale();
+      if(d>0&&pinch.d>0)zoomT=clamp(zoomT*pinch.d/d,.3,1.9);
+      panT.x=clamp(panT.x-(mx-pinch.mx)*sc,-12,12);panT.y=clamp(panT.y+(my-pinch.my)*sc,-12,12);
+      pinch={d:d,mx:mx,my:my};manual=true;return}
+    if(!dragging)return;
+    var dx=e.clientX-lx,dy=e.clientY-ly;lx=e.clientX;ly=e.clientY;
+    if(down&&Math.hypot(e.clientX-down.x,e.clientY-down.y)>6)manual=true;
+    if(down&&down.pan){var s2=camScale();panT.x=clamp(panT.x-dx*s2,-12,12);panT.y=clamp(panT.y+dy*s2,-12,12)}
+    else{yaw+=dx*.008;pitch=clamp(pitch+dy*.005,-1.1,1.1)}
+  });
+  function end(e){
+    var wasTap=e.type==='pointerup'&&down&&!down.pan&&cnt()===1&&Math.hypot(e.clientX-down.x,e.clientY-down.y)<8&&performance.now()-down.t<400;
+    delete ptrs[e.pointerId];
+    if(cnt()<2)pinch=null;
+    if(cnt()===1){var r=ptrs[Object.keys(ptrs)[0]];lx=r.x;ly=r.y;down=null}
+    if(!cnt()){dragging=false;down=null}
+    if(wasTap)tap(e.clientX,e.clientY);
+  }
+  canvas.addEventListener('pointerup',end);canvas.addEventListener('pointercancel',end);
   canvas.addEventListener('pointerleave',function(){hov=null;canvas.style.cursor=''});
+  stage.addEventListener('pointerleave',function(){if(!cnt())engaged=false});
+  canvas.addEventListener('wheel',function(e){
+    if(!(engaged||e.ctrlKey||full))return;
+    e.preventDefault();manual=true;lastTouch=performance.now();
+    zoomT=clamp(zoomT*Math.exp(e.deltaY*(e.ctrlKey?.01:.0015)),.3,1.9)},{passive:false});
+  var xbtn=document.getElementById('xbtn');
+  var IC_X='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+  var IC_C='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  function setFull(on){full=on;stage.classList.toggle('full',on);document.body.classList.toggle('lock',on);
+    xbtn.setAttribute('aria-pressed',on?'true':'false');xbtn.setAttribute('aria-label',on?'Close the full-screen view':'Expand the 3D view');xbtn.innerHTML=on?IC_C:IC_X;setTimeout(size,0)}
+  xbtn.innerHTML=IC_X;
+  xbtn.addEventListener('click',function(){setFull(!full)});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&full){setFull(false);e.stopImmediatePropagation()}},true);
   if('IntersectionObserver' in window)new IntersectionObserver(function(es){visible=es[0].isIntersecting},{threshold:.05}).observe(stage);
 
   function apply(m,e){m.parts.forEach(function(p){p.position.copy(p.userData.b).addScaledVector(p.userData.d,e)})}
@@ -852,10 +898,15 @@ footer a:hover{color:var(--fg)}
     if(!visible||document.hidden)return;
     if(!manual){var s=(now-cycle0)/1000;if(s>9.5){cycle0=now;s=0;show((cur+1)%models.length)}
       var k=s<1.4?0:s<4.4?(s-1.4)/3:s<6.6?1:s<8.8?1-(s-6.6)/2.2:0;t=k*.9;slider.value=Math.round(t*100)}
-    if(!reduce&&!dragging&&now-lastTouch>2500)yaw+=dt*.16;
+    if(!reduce&&!dragging&&!iso&&now-lastTouch>2500)yaw+=dt*.16;
     var m=models[cur],e=t*t*(3-2*t);
     root.rotation.set(m.pitch+pitch,m.yaw+yaw,0);
     apply(m,e);m.update(e,dt);fade(m,dt);
+    var ck=Math.min(1,dt*6);
+    if(iso){scene.updateMatrixWorld();box3.setFromObject(iso.o);box3.getCenter(wc);pivot.worldToLocal(wc);Pt.copy(wc)}
+    P.lerp(Pt,ck);pivot.position.copy(P).multiplyScalar(-1);
+    zoom+=(zoomT-zoom)*ck;pan.lerp(panT,ck);
+    camera.position.set(pan.x,pan.y+1.2*zoom,baseZ*zoom);camera.lookAt(pan.x,pan.y,0);
     renderer.render(scene,camera);
   }
   requestAnimationFrame(loop);
