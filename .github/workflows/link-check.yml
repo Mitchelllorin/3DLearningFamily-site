@@ -1,0 +1,69 @@
+# Every link on the hub and the three app sites, checked every morning.
+#
+# If anything is broken (a 404, a dead store link, an anchor that points at
+# nothing), the run fails, GitHub emails the repo owner, and an issue titled
+# "Broken links on the family sites" is opened with the list. Nothing to do
+# while it stays green.
+#
+# Run it by hand any time from Actions → "Daily link check" → Run workflow.
+
+name: Daily link check
+
+on:
+  schedule:
+    - cron: "17 14 * * *" # 07:17 Pacific (daylight time)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check every link on every page
+        id: lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          fail: false
+          output: ./lychee/report.md
+          args: >-
+            --no-progress
+            --max-retries 3
+            --retry-wait-time 5
+            --timeout 30
+            --include-fragments
+            --accept 200..=299,429
+            --exclude '^mailto:'
+            --exclude 'play\.google\.com/apps/testing'
+            --exclude 'accounts\.google\.com'
+            https://3dlearningfamily.com/
+            https://circuitry3d.app/
+            https://circuitry3d.app/support/
+            https://circuitry3d.app/privacy/
+            https://circuitry3d.app/terms/
+            https://circuitry3d.app/data-safety/
+            https://circuitry3d.app/delete-account/
+            https://circuitry3d.app/app-access/
+            https://theprints3d.com/
+            https://theprints3d.com/contact
+            https://theprints3d.com/privacy
+            https://theprints3d.com/data-safety
+            https://theprints3d.com/account-deletion
+            https://automotive3d.ca/
+            https://automotive3d.ca/app/
+            https://automotive3d.ca/privacy.html
+            https://automotive3d.ca/datasafety.html
+
+      - name: Open an issue with the list
+        if: steps.lychee.outputs.exit_code != 0
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: Broken links on the family sites
+          content-filepath: ./lychee/report.md
+          labels: broken-links
+
+      - name: Fail the run so GitHub sends the email
+        if: steps.lychee.outputs.exit_code != 0
+        run: exit 1
